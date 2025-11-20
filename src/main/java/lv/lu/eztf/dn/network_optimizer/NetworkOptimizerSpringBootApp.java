@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class NetworkOptimizerApplication {
+public class NetworkOptimizerSpringBootApp {
 
 	public static void main(String[] args) {
-		SpringApplication.run(NetworkOptimizerApplication.class, args);
+		SpringApplication.run(NetworkOptimizerSpringBootApp.class, args);
 	}
 
 }
