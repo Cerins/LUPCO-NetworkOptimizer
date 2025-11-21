@@ -7,13 +7,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
-@Setter @Getter @AllArgsConstructor @NoArgsConstructor
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 @JsonIdentityInfo(scope = Region.class, property = "id", generator = ObjectIdGenerators.PropertyGenerator.class)
-public class Cost {
+public class Server {
     int id;
-    BigDecimal daily;
-    BigDecimal allocation;
-    BigDecimal deallocation;
+    String name;
+    int cpuCores;
+    float ramGB;
+    float storageGB;
+
+    Region region;
+    Cost cost;
 }

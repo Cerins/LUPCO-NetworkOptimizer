@@ -7,13 +7,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
+import java.util.Date;
 
-@Setter @Getter @AllArgsConstructor @NoArgsConstructor
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 @JsonIdentityInfo(scope = Region.class, property = "id", generator = ObjectIdGenerators.PropertyGenerator.class)
-public class Cost {
+public class Request {
     int id;
-    BigDecimal daily;
-    BigDecimal allocation;
-    BigDecimal deallocation;
+    String serviceName;
+    Date date;
+    int estimatedQueryCount;
+    float maxLatencySLA;
+
+    Region sourceRegion;
 }

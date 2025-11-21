@@ -7,9 +7,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Setter @Getter @AllArgsConstructor @NoArgsConstructor
-@JsonIdentityInfo(scope = Region.class, property = "name", generator = ObjectIdGenerators.PropertyGenerator.class)
-public class Region {
-    String name;
-    float latency;
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+public class ServiceDependency {
+    Service service;
+    Service dependsOnService;
 }
