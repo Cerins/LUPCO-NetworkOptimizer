@@ -17,9 +17,8 @@ import java.util.Date;
 public class Request {
     int id;
     String serviceName;
-    Date date;
+    Date date;  // When this request happens
     int estimatedQueryCount;
     float maxLatencySLA;
-
     Region sourceRegion;
 }
