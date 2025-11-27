@@ -5,15 +5,21 @@ import ai.timefold.solver.core.api.domain.solution.PlanningScore;
 import ai.timefold.solver.core.api.domain.solution.PlanningSolution;
 import ai.timefold.solver.core.api.domain.valuerange.ValueRangeProvider;
 import ai.timefold.solver.core.api.score.buildin.hardsoft.HardSoftScore;
+import ai.timefold.solver.core.api.solver.SolverStatus;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @PlanningSolution
-@Getter @Setter
+@Getter @Setter @NoArgsConstructor
+@AllArgsConstructor
 public class DeploymentPlan {
+
+    public SolverStatus solverStatus;
 
     private List<Server> serverList = new ArrayList<>();
 
