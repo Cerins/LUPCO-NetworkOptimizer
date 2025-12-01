@@ -27,7 +27,7 @@ public class SetupTest {
         DeploymentPlan plan = new DeploymentPlan();
         // SERVERS
         Server s1 = new Server(1, "s1", 8, 32f, 500f, null, null);
-        Server s2 = new Server(2, "s2", 4, 16f, 250f, null, null);
+        Server s2 = new Server(2, "s2", 1, 16f, 250f, null, null);
         plan.setServerList(List.of(s1, s2));
         // SERVICES
         Service svc1 = new Service(1, "a1", 2f, 4f, 10f, 0);

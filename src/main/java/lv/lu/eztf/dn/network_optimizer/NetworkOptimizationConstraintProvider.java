@@ -5,6 +5,10 @@ import ai.timefold.solver.core.api.score.stream.Constraint;
 import ai.timefold.solver.core.api.score.stream.ConstraintFactory;
 import ai.timefold.solver.core.api.score.stream.ConstraintProvider;
 import lv.lu.eztf.dn.network_optimizer.domain.*;
+
+import java.util.function.Function;
+
+import static ai.timefold.solver.core.api.score.stream.ConstraintCollectors.sum;
 import static ai.timefold.solver.core.api.score.stream.Joiners.*;
 
 public class NetworkOptimizationConstraintProvider implements ConstraintProvider {
@@ -18,6 +22,9 @@ public class NetworkOptimizationConstraintProvider implements ConstraintProvider
                 requestMustHaveService(factory),
                 requestMustHaveServer(factory),
                 validDateRange(factory),
+                enoughCPU(factory),
+                enoughMemory(factory),
+                enoughStorage(factory),
                 // Soft constraints
                 deploymentCosts(factory)
         };
@@ -75,6 +82,42 @@ public class NetworkOptimizationConstraintProvider implements ConstraintProvider
                 .penalize(HardSoftScore.ONE_HARD)
                 .asConstraint("Invalid date range");
     }
+    Constraint enoughCPU(ConstraintFactory factory) {
+        return factory.forEach(Deployment.class)
+                // only count real placements
+                .filter(d -> d.getServer() != null && d.getService() != null)
+                // group by server, sum CPU used by its deployments
+                .groupBy(Deployment::getServer,
+                        sum(d -> (int) d.getService().getCpuPerInstance()))
+                // keep only servers that are over capacity
+                .filter((server, usedCpu) -> usedCpu > server.getCpuCores())
+                // penalize by the overload amount
+                .penalize(HardSoftScore.ONE_HARD,
+                        (server, usedCpu) -> usedCpu - server.getCpuCores())
+                .asConstraint("CPU capacity exceeded");
+    }
+    Constraint enoughMemory(ConstraintFactory factory) {
+        return factory.forEach(Deployment.class)
+                .filter(d -> d.getServer() != null && d.getService() != null)
+                .groupBy(Deployment::getServer,
+                        sum(d -> (int) d.getService().getRamPerInstance()))
+                .filter((server, usedRam) -> usedRam > server.getRamGB())
+                .penalize(HardSoftScore.ONE_HARD,
+                        (server, usedRam) -> (int) (usedRam - server.getRamGB()))
+                .asConstraint("RAM capacity exceeded");
+    }
+    Constraint enoughStorage(ConstraintFactory factory) {
+        return factory.forEach(Deployment.class)
+                .filter(d -> d.getServer() != null && d.getService() != null)
+                .groupBy(Deployment::getServer,
+                        sum(d -> (int) d.getService().getStoragePerInstance()))
+                .filter((server, usedStorage) -> usedStorage > server.getStorageGB())
+                .penalize(HardSoftScore.ONE_HARD,
+                        (server, usedStorage) -> (int) (usedStorage - server.getStorageGB()))
+                .asConstraint("Storage capacity exceeded");
+    }
+
+
     // SOFT
     // Currently punish servers which have server running or service
     Constraint deploymentCosts(ConstraintFactory factory) {
