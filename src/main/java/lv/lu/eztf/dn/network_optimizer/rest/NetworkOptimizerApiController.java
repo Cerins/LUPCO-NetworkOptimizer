@@ -7,7 +7,6 @@ import ai.timefold.solver.core.api.solver.SolverManager;
 import ai.timefold.solver.core.api.solver.SolverStatus;
 import lombok.extern.slf4j.Slf4j;
 import lv.lu.eztf.dn.network_optimizer.domain.DeploymentPlan;
-import org.springframework.boot.autoconfigure.batch.BatchProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -21,13 +20,14 @@ import java.util.concurrent.ConcurrentMap;
 
 @RestController
 @Slf4j
-public class NetworkOptimizerController {
+@RequestMapping("/api")
+public class NetworkOptimizerApiController {
     private final SolverManager<DeploymentPlan, String> solverManager;
     private final SolutionManager<DeploymentPlan, HardSoftScore> solutionManager;
     private final ConcurrentMap<String, Job> jobIdToJob = new ConcurrentHashMap<>();
 
-    public NetworkOptimizerController(SolverManager<DeploymentPlan, String> solverManager,
-                          SolutionManager<DeploymentPlan, HardSoftScore> solutionManager) {
+    public NetworkOptimizerApiController(SolverManager<DeploymentPlan, String> solverManager,
+                                         SolutionManager<DeploymentPlan, HardSoftScore> solutionManager) {
         this.solverManager = solverManager;
         this.solutionManager = solutionManager;
     }
@@ -35,9 +35,7 @@ public class NetworkOptimizerController {
     @GetMapping
     public Collection<String> list() {
         Collection<String> existingJobIds = jobIdToJob.keySet();
-        Collection<String> combinedJobIds = new ArrayList<>(existingJobIds);
-        combinedJobIds.add("test");
-        return combinedJobIds;
+        return existingJobIds;
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
@@ -56,7 +54,7 @@ public class NetworkOptimizerController {
     }
 
     @GetMapping(value = "/{jobId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public DeploymentPlan getEVRPsolution(
+    public DeploymentPlan getSolution(
             @PathVariable("jobId") String jobId) {
         DeploymentPlan solution = getSolutionAndCheckForExceptions(jobId);
         SolverStatus solverStatus = solverManager.getSolverStatus(jobId);

@@ -13,7 +13,7 @@ import java.util.Date;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIdentityInfo(scope = Region.class, property = "id", generator = ObjectIdGenerators.PropertyGenerator.class)
+@JsonIdentityInfo(scope = Request.class, property = "id", generator = ObjectIdGenerators.PropertyGenerator.class)
 public class Request {
     int id;
     String serviceName;

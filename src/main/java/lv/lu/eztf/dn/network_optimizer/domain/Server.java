@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIdentityInfo(scope = Region.class, property = "id", generator = ObjectIdGenerators.PropertyGenerator.class)
+@JsonIdentityInfo(scope = Service.class, property = "id", generator = ObjectIdGenerators.PropertyGenerator.class)
 public class Server {
     int id;
     String name;

@@ -1,0 +1,53 @@
+{
+  "servers": [
+    {
+      "id": 1,
+      "name": "s1",
+      "cpuCores": 8,
+      "ramGb": 32.0,
+      "storageGb": 500.0,
+      "region": null,
+      "zone": null
+    }
+  ],
+  "services": [
+    {
+      "id": 1,
+      "name": "a1",
+      "cpuRequired": 2.0,
+      "ramRequired": 4.0,
+      "storageRequired": 10.0,
+      "priority": 0
+    }
+  ],
+  "requests": [
+    {
+      "id": 1,
+      "serviceName": "a1",
+      "dateCreated": "2024-12-01T10:00:00Z",
+      "durationDays": 10,
+      "budget": 50.0,
+      "assignedDeployment": null
+    }
+  ],
+  "availableDates": [
+    "2024-12-01T00:00:00Z"
+  ],
+  "latencies": [
+    {
+      "fromRegion": "eu-west",
+      "toRegion": "us-east",
+      "latencyMs": 85.0
+    }
+  ],
+  "deployments": [
+    {
+      "id": 1,
+      "service": null,
+      "server": null,
+      "dateFrom": null,
+      "dateTo": null,
+      "requests": []
+    }
+  ]
+}

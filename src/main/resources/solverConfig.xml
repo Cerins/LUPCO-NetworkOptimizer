@@ -1,0 +1,13 @@
+<solver>
+    <solutionClass>lv.lu.eztf.dn.network_optimizer.domain.DeploymentPlan</solutionClass>
+    <entityClass>lv.lu.eztf.dn.network_optimizer.domain.Deployment</entityClass>
+
+    <scoreDirectorFactory>
+        <constraintProviderClass>lv.lu.eztf.dn.network_optimizer.NetworkOptimizationConstraintProvider</constraintProviderClass>
+    </scoreDirectorFactory>
+
+    <environmentMode>FULL_ASSERT</environmentMode>
+    <termination>
+        <diminishedReturns />
+    </termination>
+</solver>

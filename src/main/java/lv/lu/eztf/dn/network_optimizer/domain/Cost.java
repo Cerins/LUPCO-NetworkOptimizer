@@ -10,7 +10,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 
 @Setter @Getter @AllArgsConstructor @NoArgsConstructor
-@JsonIdentityInfo(scope = Region.class, property = "id", generator = ObjectIdGenerators.PropertyGenerator.class)
+@JsonIdentityInfo(scope = Cost.class, property = "id", generator = ObjectIdGenerators.PropertyGenerator.class)
 public class Cost {
     int id;
     BigDecimal daily;
