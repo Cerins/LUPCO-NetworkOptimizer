@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Display Deployments
     const deploymentsContainer = document.getElementById("deployments_container");
-    job.deployments.forEach(deployment => {
+    job.deployments.filter(d => d.active).forEach(deployment => {
         const deploymentCard = document.createElement("div");
         const activeClass = deployment.active ? "border-green-400 bg-green-50" : "border-gray-200";
         deploymentCard.className = `border-2 ${activeClass} rounded-lg p-4 hover:shadow-md transition-shadow`;

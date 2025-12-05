@@ -16,47 +16,46 @@
 </div>
 
 <div id="content" class="m-5 max-w-7xl mx-auto">
-    <!-- Header Section -->
     <div class="bg-white rounded-lg shadow p-6 mb-6">
         <div class="flex flex-row gap-10 items-center mb-4">
             <h1 class="text-2xl font-bold text-gray-800">Job ID: <span id="job_id"></span></h1>
             <span id="job_status" class="px-4 py-2 rounded-full text-sm font-semibold"></span>
         </div>
-        <div class="border-t pt-4">
-            <span class="text-lg font-semibold text-gray-700">Score: </span>
-            <span id="job_score" class="text-lg text-blue-600"></span>
+        <div class="border-t pt-4 flex justify-between pr-10">
+            <div>
+                <span class="text-lg font-semibold text-gray-700">Score: </span>
+                <span id="job_score" class="text-lg text-blue-600"></span>
+            </div>
+            <button id="score_expand_button">Expand V</button>
         </div>
+        <div id="expanded_score"></div>
     </div>
 
-    <!-- Servers Section -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Servers</h2>
-        <div id="servers_container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-    </div>
-
-    <!-- Services Section -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Services</h2>
-        <div id="services_container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-    </div>
-
-    <!-- Requests Section -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Requests</h2>
-        <div id="requests_container" class="space-y-3"></div>
-    </div>
-
-    <!-- Deployments Section -->
     <div class="bg-white rounded-lg shadow p-6 mb-6">
         <h2 class="text-xl font-bold text-gray-800 mb-4">Deployments</h2>
         <div id="deployments_container" class="space-y-3"></div>
     </div>
 
-    <!-- Available Dates Section -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Servers</h2>
+        <div id="servers_container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Services</h2>
+        <div id="services_container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Requests</h2>
+        <div id="requests_container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </div>
+
     <div class="bg-white rounded-lg shadow p-6 mb-6">
         <h2 class="text-xl font-bold text-gray-800 mb-4">Available Dates</h2>
         <div id="dates_container" class="flex flex-wrap gap-2"></div>
     </div>
 </div>
 <script src="job.js"></script>
+<script src="score.js"></script>
 </body>
