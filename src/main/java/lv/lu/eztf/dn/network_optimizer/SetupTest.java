@@ -6,6 +6,7 @@ import ai.timefold.solver.core.config.solver.EnvironmentMode;
 import ai.timefold.solver.core.config.solver.SolverConfig;
 import lv.lu.eztf.dn.network_optimizer.domain.*;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -25,9 +26,11 @@ public class SetupTest {
         );
         Solver<DeploymentPlan> solver = solverFactory.buildSolver();
         DeploymentPlan plan = new DeploymentPlan();
+        Cost c1 = new Cost(1, BigDecimal.valueOf(2), BigDecimal.valueOf(5), BigDecimal.valueOf(3));
+        Cost c2 = new Cost(1, BigDecimal.valueOf(1), BigDecimal.valueOf(1), BigDecimal.valueOf(2));
         // SERVERS
-        Server s1 = new Server(1, "s1", 8, 32f, 500f, null, null);
-        Server s2 = new Server(2, "s2", 1, 16f, 250f, null, null);
+        Server s1 = new Server(1, "s1", 8, 32f, 500f, null, c1);
+        Server s2 = new Server(2, "s2", 1, 16f, 250f, null, c2);
         plan.setServerList(List.of(s1, s2));
         // SERVICES
         Service svc1 = new Service(1, "a1", 2f, 4f, 10f, 0);

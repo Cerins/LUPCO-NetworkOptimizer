@@ -2,11 +2,14 @@ package lv.lu.eztf.dn.network_optimizer;
 
 import ai.timefold.solver.core.api.score.buildin.hardsoft.HardSoftScore;
 import ai.timefold.solver.core.api.score.stream.Constraint;
+import ai.timefold.solver.core.api.score.stream.ConstraintCollectors;
 import ai.timefold.solver.core.api.score.stream.ConstraintFactory;
 import ai.timefold.solver.core.api.score.stream.ConstraintProvider;
+import ai.timefold.solver.core.api.score.stream.common.ConnectedRange;
 import lv.lu.eztf.dn.network_optimizer.domain.*;
 
-import java.util.function.Function;
+import java.math.BigDecimal;
+import java.util.Date;
 
 import static ai.timefold.solver.core.api.score.stream.ConstraintCollectors.sum;
 import static ai.timefold.solver.core.api.score.stream.Joiners.*;
@@ -26,7 +29,7 @@ public class NetworkOptimizationConstraintProvider implements ConstraintProvider
                 enoughMemory(factory),
                 enoughStorage(factory),
                 // Soft constraints
-                deploymentCosts(factory)
+                serverActiveIntervalsCost(factory)
         };
     }
     // HARD
@@ -118,15 +121,52 @@ public class NetworkOptimizationConstraintProvider implements ConstraintProvider
     }
 
 
-    // SOFT
-    // Currently punish servers which have server running or service
-    Constraint deploymentCosts(ConstraintFactory factory) {
+    /**
+     * Cost per active interval:
+     *  - allocation cost when interval starts
+     *  - daily * number_of_days
+     *  - deallocation when interval ends
+     */
+    private Constraint serverActiveIntervalsCost(ConstraintFactory factory) {
+
         return factory.forEach(Deployment.class)
+                .filter(Deployment::isActive)
+                .filter(Deployment::hasValidDates)
+
+                .groupBy(
+                        Deployment::getServer,
+                        ConstraintCollectors.toConnectedRanges(
+                                Deployment::getDateFrom,
+                                Deployment::getDateTo,
+                                (a, b) -> b.getTime() - a.getTime()   // MUST return a comparable numeric difference
+                        )
+                )
+
+                .flattenLast(connectedRangeChain -> connectedRangeChain.getConnectedRanges())
+
                 .penalize(HardSoftScore.ONE_SOFT,
-                        d ->
-                                (d.getService() != null ? 5 : 0) +
-                                (d.getServer() != null ? 3 : 0)
-                                )
+                        (server, range) -> computeServerIntervalCost(server, range))
+
                 .asConstraint("Deployments cost money");
     }
+
+    /**
+     * Cost calculation performed inside CS constraint:
+     * allocation + daily × days + deallocation
+     */
+    private int computeServerIntervalCost(Server server, ConnectedRange range) {
+        var cost = server.getCost();
+
+        long millis = ((Date)(range.getEnd())).getTime() - ((Date)range.getStart()).getTime();
+        long days = Math.max(1, millis / (24L * 60 * 60 * 1000));  // treat same-day as 1 day
+
+        BigDecimal allocation  = cost.getAllocation();
+        BigDecimal daily       = cost.getDaily().multiply(BigDecimal.valueOf(days));
+        BigDecimal deallocation = cost.getDeallocation();
+
+        BigDecimal total = allocation.add(daily).add(deallocation);
+
+        return total.intValue(); // CS needs an int/long score impact
+    }
+
 }
