@@ -21,4 +21,9 @@ public class Request {
     int estimatedQueryCount;
     float maxLatencySLA;
     Region sourceRegion;
+
+    @Override
+    public String toString() {
+        return String.format("%s, %s, %d, %f", serviceName, date, estimatedQueryCount, maxLatencySLA);
+    }
 }
