@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             <p class="text-sm text-gray-600"><span class="font-semibold">RAM:</span> ${server.ramGB} GB</p>
             <p class="text-sm text-gray-600"><span class="font-semibold">Storage:</span> ${server.storageGB} GB</p>
             <p class="text-sm text-gray-600"><span class="font-semibold">Region:</span> ${server.region || 'N/A'}</p>
-            <p class="text-sm text-gray-600"><span class="font-semibold">Cost:</span> ${server.cost || 'N/A'}</p>
+            <p class="text-sm text-gray-600"><span class="font-semibold">Cost:</span> ${server.cost.id || 'N/A'}</p>
         `;
         serversContainer.appendChild(serverCard);
     });

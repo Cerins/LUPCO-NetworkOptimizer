@@ -33,8 +33,8 @@ document.addEventListener("DOMContentLoaded", () => {
             id: serverId++,
             name: name,
             cpuCores: cpu,
-            ramGb: memory,
-            storageGb: storage,
+            ramGB: memory,
+            storageGB: storage,
             region: region,
             zone: zone,
             cost: costId
@@ -78,9 +78,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const cpuReq = Number(document.getElementById("cpu_required").value);
         const memReq = Number(document.getElementById("memory_required").value);
         const storageReq = Number(document.getElementById("storage_required").value);
-        const priority = Number(document.getElementById("priority").value);
+        const maxReq = Number(document.getElementById("max_requests").value);
 
-        if (!name || !cpuReq || !memReq || !storageReq) {
+        if (!name || !cpuReq || !memReq || !storageReq || !maxReq) {
             alert("Fill all required service fields");
             return;
         }
@@ -88,10 +88,10 @@ document.addEventListener("DOMContentLoaded", () => {
         services.push({
             id: serviceId++,
             name: name,
-            cpuRequired: cpuReq,
-            ramRequired: memReq,
-            storageRequired: storageReq,
-            priority: priority
+            cpuPerInstance: cpuReq,
+            ramPerInstance: memReq,
+            storagePerInstance: storageReq,
+            maxRequestsPerInstance: maxReq
         });
 
         document.getElementById("service_form").reset();
@@ -105,10 +105,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const serviceName = document.getElementById("request_service_name").value;
         const dateCreated = document.getElementById("date_created").value;
-        const durationDays = Number(document.getElementById("duration_days").value);
-        const budget = Number(document.getElementById("budget").value);
+        const queryCount = Number(document.getElementById("query_count").value);
+        const maxLatency = Number(document.getElementById("max_latency").value);
+        const region = document.getElementById("region_id").value;
 
-        if (!serviceName || !dateCreated || !durationDays || !budget) {
+        if (!serviceName || !dateCreated || !queryCount || !maxLatency) {
             alert("Fill all request fields");
             return;
         }
@@ -116,10 +117,10 @@ document.addEventListener("DOMContentLoaded", () => {
         requests.push({
             id: requestId++,
             serviceName: serviceName,
-            dateCreated: new Date(dateCreated).toISOString(),
-            durationDays: durationDays,
-            budget: budget,
-            assignedDeployment: null
+            date: new Date(dateCreated).toISOString(),
+            estimatedQueryCount: queryCount,
+            maxLatencySLA: maxLatency,
+            sourceRegion: region
         });
 
         document.getElementById("request_form").reset();
@@ -178,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
             servers.map((s, i) => `
                 <div class="border p-2 mb-2 rounded bg-gray-50 flex justify-between items-start">
                     <div>
-                        <strong>${s.name}</strong> - CPU: ${s.cpuCores}, RAM: ${s.ramGb}GB, Storage: ${s.storageGb}GB, CostID: ${s.cost}
+                        <strong>${s.name}</strong> - CPU: ${s.cpuCores}, RAM: ${s.ramGB}GB, Storage: ${s.storageGB}GB, CostID: ${s.cost}
                         ${s.region ? `<br>Region: ${s.region}${s.zone ? `, Zone: ${s.zone}` : ''}` : ''}
                     </div>
                     <button onclick="removeServer(${i})" class="text-red-500 hover:text-red-700">✕</button>
@@ -208,7 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
             services.map((s, i) => `
                 <div class="border p-2 mb-2 rounded bg-gray-50 flex justify-between items-start">
                     <div>
-                        <strong>${s.name}</strong> - CPU: ${s.cpuRequired}, RAM: ${s.ramRequired}GB, Storage: ${s.storageRequired}GB, Priority: ${s.priority}
+                        <strong>${s.name}</strong> - CPU: ${s.cpuPerInstance}, RAM: ${s.ramPerInstance}GB, Storage: ${s.storagePerInstance}GB, Max requests: ${s.maxRequestsPerInstance}
                     </div>
                     <button onclick="removeService(${i})" class="text-red-500 hover:text-red-700">✕</button>
                 </div>
@@ -222,8 +223,8 @@ document.addEventListener("DOMContentLoaded", () => {
             requests.map((r, i) => `
                 <div class="border p-2 mb-2 rounded bg-gray-50 flex justify-between items-start">
                     <div>
-                        <strong>${r.serviceName}</strong> - ${r.durationDays} days, Budget: $${r.budget}
-                        <br><small>${new Date(r.dateCreated).toLocaleString()}</small>
+                        <strong>${r.serviceName}</strong> - Estimated Queries: ${r.estimatedQueryCount}, Max latency: ${r.maxLatencySLA}
+                        <br><small>${new Date(r.date).toLocaleString()}</small> <small>Region: ${r.sourceRegion ? r.sourceRegion : "N/A"}</small>
                     </div>
                     <button onclick="removeRequest(${i})" class="text-red-500 hover:text-red-700">✕</button>
                 </div>
@@ -278,6 +279,7 @@ document.addEventListener("DOMContentLoaded", () => {
             serverList: servers,
             serviceList: services,
             requests: requests,
+            costs: costs,
             availableDates: availableDates,
             deployments: deployments,
             latencies: latencies
@@ -339,76 +341,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const a = document.createElement('a');
             a.href = url;
             a.download = 'network-optimizer-config.json';
-            a.click();
-            URL.revokeObjectURL(url);
-        });
-    }
-
-    // JSON template button
-    const templateBtn = document.getElementById("json_template_btn");
-    if (templateBtn) {
-        templateBtn.addEventListener("click", () => {
-            const template = {
-                servers: [
-                    {
-                        id: 1,
-                        name: "s1",
-                        cpuCores: 8,
-                        ramGb: 32.0,
-                        storageGb: 500.0,
-                        region: null,
-                        zone: null
-                    }
-                ],
-                services: [
-                    {
-                        id: 1,
-                        name: "a1",
-                        cpuRequired: 2.0,
-                        ramRequired: 4.0,
-                        storageRequired: 10.0,
-                        priority: 0
-                    }
-                ],
-                requests: [
-                    {
-                        id: 1,
-                        serviceName: "a1",
-                        dateCreated: "2024-12-01T10:00:00Z",
-                        durationDays: 10,
-                        budget: 50.0,
-                        assignedDeployment: null
-                    }
-                ],
-                availableDates: [
-                    "2024-12-01T00:00:00Z",
-                    "2024-12-04T00:00:00Z"
-                ],
-                deployments: [
-                    {
-                        id: 1,
-                        service: null,
-                        server: null,
-                        dateFrom: null,
-                        dateTo: null,
-                        requests: []
-                    }
-                ],
-                latencies: [
-                    {
-                        fromRegion: "eu-west",
-                        toRegion: "us-east",
-                        latencyMs: 85.0
-                    }
-                ]
-            };
-
-            const jsonStr = JSON.stringify(template, null, 2);
-            const blob = new Blob([jsonStr], {type: 'application/json'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'network-optimizer-template.json';
             a.click();
             URL.revokeObjectURL(url);
         });
