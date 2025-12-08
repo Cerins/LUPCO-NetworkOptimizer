@@ -29,6 +29,7 @@
         </div>
         <button class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600" id="submit_button">Submit a problem</button>
     </div>
+
     <div class="w-full border-b-2 mb-5"></div>
         <div class="flex gap-4 overflow-scroll">
             <!-- SERVERS SECTION -->
@@ -53,6 +54,10 @@
                             <input class="border-2 w-full p-1 rounded" type="number" id="storage_capacity" name="storage_capacity" required />
                         </div>
                         <div>
+                            <label for="cost_id" class="block text-sm font-medium">Cost (Id)</label>
+                            <input class="border-2 w-full p-1 rounded" type="number" id="cost_id" name="cost_id" value="1" />
+                        </div>
+                        <div>
                             <label for="server_region" class="block text-sm font-medium">Region (optional)</label>
                             <input class="border-2 w-full p-1 rounded" type="text" id="server_region" name="server_region" />
                         </div>
@@ -64,6 +69,29 @@
                     </div>
                 </form>
                 <div id="server_list" class="mt-4 p-2 bg-white rounded shadow max-h-96 overflow-y-auto"></div>
+            </div>
+
+            <!-- COSTS -->
+            <div class="min-w-[400px] bg-white rounded-lg shadow p-6 pr-4">
+                <h1 class="text-xl font-bold mb-2">COSTS</h1>
+                <form id="costs_form">
+                    <div class="flex flex-col gap-2 w-full p-2">
+                        <div class="flex-1">
+                            <label for="daily" class="block text-sm font-medium">Daily cost</label>
+                            <input class="border-2 w-full p-1 rounded" type="number" id="daily" name="daily" required />
+                        </div>
+                        <div class="flex-1">
+                            <label for="allocation" class="block text-sm font-medium">Allocation cost</label>
+                            <input class="border-2 w-full p-1 rounded" type="number" id="allocation" name="allocation" required />
+                        </div>
+                        <div class="flex-1">
+                            <label for="deallocation" class="block text-sm font-medium">Deallocation cost</label>
+                            <input class="border-2 w-full p-1 rounded" type="number" id="deallocation" name="deallocation" required />
+                        </div>
+                        <button type="submit" id="submit_cost" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Add +</button>
+                    </div>
+                </form>
+                <div id="cost_list" class="mt-4 p-2 bg-white rounded shadow max-h-48 overflow-y-auto"></div>
             </div>
 
             <!-- SERVICES SECTION -->
@@ -88,8 +116,8 @@
                             <input class="border-2 w-full p-1 rounded" type="number" step="0.1" id="storage_required" name="storage_required" required />
                         </div>
                         <div>
-                            <label for="priority" class="block text-sm font-medium">Priority</label>
-                            <input class="border-2 w-full p-1 rounded" type="number" id="priority" name="priority" value="0" required />
+                            <label for="max_requests" class="block text-sm font-medium">Max requests per instance</label>
+                            <input class="border-2 w-full p-1 rounded" type="number" id="max_requests" name="max_requests" required />
                         </div>
                         <button type="submit" id="submit_service" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 mt-2">Add service +</button>
                     </div>
@@ -111,12 +139,16 @@
                             <input class="border-2 w-full p-1 rounded" type="datetime-local" id="date_created" name="date_created" required />
                         </div>
                         <div>
-                            <label for="duration_days" class="block text-sm font-medium">Duration (days)</label>
-                            <input class="border-2 w-full p-1 rounded" type="number" id="duration_days" name="duration_days" required />
+                            <label for="query_count" class="block text-sm font-medium">Estimated query count</label>
+                            <input class="border-2 w-full p-1 rounded" type="number" id="query_count" name="query_count" required />
                         </div>
                         <div>
-                            <label for="budget" class="block text-sm font-medium">Budget</label>
-                            <input class="border-2 w-full p-1 rounded" type="number" step="0.01" id="budget" name="budget" required />
+                            <label for="max_latency" class="block text-sm font-medium">Max latency</label>
+                            <input class="border-2 w-full p-1 rounded" type="number" step="0.01" id="max_latency" name="max_latency" required />
+                        </div>
+                        <div>
+                            <label for="region_id" class="block text-sm font-medium">Region</label>
+                            <input class="border-2 w-full p-1 rounded" type="number" step="0.01" id="region_id" name="region_id" />
                         </div>
                         <button type="submit" id="submit_request" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 mt-2">Add request +</button>
                     </div>

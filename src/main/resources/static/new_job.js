@@ -4,10 +4,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const requests = [];
     const availableDates = [];
     const latencies = [];
+    const costs = [];
 
     let serverId = 1;
     let serviceId = 1;
     let requestId = 1;
+    let costId = 1;
+
 
     // Add server
     document.getElementById("submit_server").addEventListener("click", (e) => {
@@ -19,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const storage = Number(document.getElementById("storage_capacity").value);
         const region = document.getElementById("server_region").value || null;
         const zone = document.getElementById("server_zone").value || null;
+        const costId = Number(document.getElementById("cost_id").value || 1);
 
         if (!name || !cpu || !memory || !storage) {
             alert("Fill all required server fields");
@@ -29,16 +33,42 @@ document.addEventListener("DOMContentLoaded", () => {
             id: serverId++,
             name: name,
             cpuCores: cpu,
-            ramGb: memory,
-            storageGb: storage,
+            ramGB: memory,
+            storageGB: storage,
             region: region,
-            zone: zone
+            zone: zone,
+            cost: costId
         });
 
         document.getElementById("server_form").reset();
         updateServerList();
         console.log("Servers:", servers);
     });
+
+    // Add cost
+        document.getElementById("submit_cost").addEventListener("click", (e) => {
+            e.preventDefault();
+
+            const daily = Number(document.getElementById("daily").value);
+            const allocation = Number(document.getElementById("allocation").value);
+            const deallocation = Number(document.getElementById("deallocation").value);
+
+            if (!daily || !allocation || !deallocation) {
+                alert("Fill all required cost fields");
+                return;
+            }
+
+            costs.push({
+                id: costId++,
+                daily: daily,
+                allocation: allocation,
+                deallocation: deallocation
+            });
+
+            document.getElementById("service_form").reset();
+            updateCostList();
+            console.log("Costs:", costs);
+        });
 
     // Add service
     document.getElementById("submit_service").addEventListener("click", (e) => {
@@ -48,9 +78,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const cpuReq = Number(document.getElementById("cpu_required").value);
         const memReq = Number(document.getElementById("memory_required").value);
         const storageReq = Number(document.getElementById("storage_required").value);
-        const priority = Number(document.getElementById("priority").value);
+        const maxReq = Number(document.getElementById("max_requests").value);
 
-        if (!name || !cpuReq || !memReq || !storageReq) {
+        if (!name || !cpuReq || !memReq || !storageReq || !maxReq) {
             alert("Fill all required service fields");
             return;
         }
@@ -58,10 +88,10 @@ document.addEventListener("DOMContentLoaded", () => {
         services.push({
             id: serviceId++,
             name: name,
-            cpuRequired: cpuReq,
-            ramRequired: memReq,
-            storageRequired: storageReq,
-            priority: priority
+            cpuPerInstance: cpuReq,
+            ramPerInstance: memReq,
+            storagePerInstance: storageReq,
+            maxRequestsPerInstance: maxReq
         });
 
         document.getElementById("service_form").reset();
@@ -75,10 +105,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const serviceName = document.getElementById("request_service_name").value;
         const dateCreated = document.getElementById("date_created").value;
-        const durationDays = Number(document.getElementById("duration_days").value);
-        const budget = Number(document.getElementById("budget").value);
+        const queryCount = Number(document.getElementById("query_count").value);
+        const maxLatency = Number(document.getElementById("max_latency").value);
+        const region = document.getElementById("region_id").value;
 
-        if (!serviceName || !dateCreated || !durationDays || !budget) {
+        if (!serviceName || !dateCreated || !queryCount || !maxLatency) {
             alert("Fill all request fields");
             return;
         }
@@ -86,10 +117,10 @@ document.addEventListener("DOMContentLoaded", () => {
         requests.push({
             id: requestId++,
             serviceName: serviceName,
-            dateCreated: new Date(dateCreated).toISOString(),
-            durationDays: durationDays,
-            budget: budget,
-            assignedDeployment: null
+            date: new Date(dateCreated).toISOString(),
+            estimatedQueryCount: queryCount,
+            maxLatencySLA: maxLatency,
+            sourceRegion: region
         });
 
         document.getElementById("request_form").reset();
@@ -148,13 +179,28 @@ document.addEventListener("DOMContentLoaded", () => {
             servers.map((s, i) => `
                 <div class="border p-2 mb-2 rounded bg-gray-50 flex justify-between items-start">
                     <div>
-                        <strong>${s.name}</strong> - CPU: ${s.cpuCores}, RAM: ${s.ramGb}GB, Storage: ${s.storageGb}GB
+                        <strong>${s.name}</strong> - CPU: ${s.cpuCores}, RAM: ${s.ramGB}GB, Storage: ${s.storageGB}GB, CostID: ${s.cost}
                         ${s.region ? `<br>Region: ${s.region}${s.zone ? `, Zone: ${s.zone}` : ''}` : ''}
                     </div>
                     <button onclick="removeServer(${i})" class="text-red-500 hover:text-red-700">✕</button>
                 </div>
             `).join('');
     }
+
+    function updateCostList() {
+            const list = document.getElementById("cost_list");
+            if (!list) return;
+            list.innerHTML = '<h3 class="font-bold mb-2">Added Costs:</h3>' +
+                costs.map((s, i) => `
+                    <div class="border p-2 mb-2 rounded bg-gray-50 flex justify-between items-start">
+                        <div>
+                            <strong>${s.id}</strong> - Daily: ${s.daily} EUR/day, Allocation: ${s.allocation} EUR, Deallocation: ${s.deallocation} EUR
+                        </div>
+                        <button onclick="removeServer(${i})" class="text-red-500 hover:text-red-700">✕</button>
+                    </div>
+                `).join('');
+        }
+
 
     function updateServiceList() {
         const list = document.getElementById("service_list");
@@ -163,7 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
             services.map((s, i) => `
                 <div class="border p-2 mb-2 rounded bg-gray-50 flex justify-between items-start">
                     <div>
-                        <strong>${s.name}</strong> - CPU: ${s.cpuRequired}, RAM: ${s.ramRequired}GB, Storage: ${s.storageRequired}GB, Priority: ${s.priority}
+                        <strong>${s.name}</strong> - CPU: ${s.cpuPerInstance}, RAM: ${s.ramPerInstance}GB, Storage: ${s.storagePerInstance}GB, Max requests: ${s.maxRequestsPerInstance}
                     </div>
                     <button onclick="removeService(${i})" class="text-red-500 hover:text-red-700">✕</button>
                 </div>
@@ -177,8 +223,8 @@ document.addEventListener("DOMContentLoaded", () => {
             requests.map((r, i) => `
                 <div class="border p-2 mb-2 rounded bg-gray-50 flex justify-between items-start">
                     <div>
-                        <strong>${r.serviceName}</strong> - ${r.durationDays} days, Budget: $${r.budget}
-                        <br><small>${new Date(r.dateCreated).toLocaleString()}</small>
+                        <strong>${r.serviceName}</strong> - Estimated Queries: ${r.estimatedQueryCount}, Max latency: ${r.maxLatencySLA}
+                        <br><small>${new Date(r.date).toLocaleString()}</small> <small>Region: ${r.sourceRegion ? r.sourceRegion : "N/A"}</small>
                     </div>
                     <button onclick="removeRequest(${i})" class="text-red-500 hover:text-red-700">✕</button>
                 </div>
@@ -233,6 +279,7 @@ document.addEventListener("DOMContentLoaded", () => {
             serverList: servers,
             serviceList: services,
             requests: requests,
+            costs: costs,
             availableDates: availableDates,
             deployments: deployments,
             latencies: latencies
@@ -299,76 +346,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // JSON template button
-    const templateBtn = document.getElementById("json_template_btn");
-    if (templateBtn) {
-        templateBtn.addEventListener("click", () => {
-            const template = {
-                servers: [
-                    {
-                        id: 1,
-                        name: "s1",
-                        cpuCores: 8,
-                        ramGb: 32.0,
-                        storageGb: 500.0,
-                        region: null,
-                        zone: null
-                    }
-                ],
-                services: [
-                    {
-                        id: 1,
-                        name: "a1",
-                        cpuRequired: 2.0,
-                        ramRequired: 4.0,
-                        storageRequired: 10.0,
-                        priority: 0
-                    }
-                ],
-                requests: [
-                    {
-                        id: 1,
-                        serviceName: "a1",
-                        dateCreated: "2024-12-01T10:00:00Z",
-                        durationDays: 10,
-                        budget: 50.0,
-                        assignedDeployment: null
-                    }
-                ],
-                availableDates: [
-                    "2024-12-01T00:00:00Z",
-                    "2024-12-04T00:00:00Z"
-                ],
-                deployments: [
-                    {
-                        id: 1,
-                        service: null,
-                        server: null,
-                        dateFrom: null,
-                        dateTo: null,
-                        requests: []
-                    }
-                ],
-                latencies: [
-                    {
-                        fromRegion: "eu-west",
-                        toRegion: "us-east",
-                        latencyMs: 85.0
-                    }
-                ]
-            };
-
-            const jsonStr = JSON.stringify(template, null, 2);
-            const blob = new Blob([jsonStr], {type: 'application/json'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'network-optimizer-template.json';
-            a.click();
-            URL.revokeObjectURL(url);
-        });
-    }
-
     // JSON import handling
     const importInput = document.getElementById("json_import");
     if (importInput) {
@@ -387,6 +364,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     requests.length = 0;
                     availableDates.length = 0;
                     latencies.length = 0;
+                    costs.length = 0;
 
                     // Import data
                     if (imported.serverList) servers.push(...imported.serverList);
@@ -394,11 +372,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (imported.requests) requests.push(...imported.requests);
                     if (imported.availableDates) availableDates.push(...imported.availableDates);
                     if (imported.latencies) latencies.push(...imported.latencies);
+                    if (imported.costs) costs.push(...imported.costs);
 
                     // Update ID counters
                     serverId = Math.max(...servers.map(s => s.id), 0) + 1;
                     serviceId = Math.max(...services.map(s => s.id), 0) + 1;
                     requestId = Math.max(...requests.map(r => r.id), 0) + 1;
+                    costId = Math.max(...costs.map(r => r.id), 0) + 1;
 
                     // Update all lists
                     updateServerList();
@@ -406,6 +386,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     updateRequestList();
                     updateDateList();
                     updateLatencyList();
+                    updateCostList();
 
                     alert('JSON imported successfully!');
                 } catch (err) {
