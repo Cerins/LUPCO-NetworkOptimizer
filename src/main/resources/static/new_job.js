@@ -4,10 +4,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const requests = [];
     const availableDates = [];
     const latencies = [];
+    const costs = [];
 
     let serverId = 1;
     let serviceId = 1;
     let requestId = 1;
+    let costId = 1;
+
 
     // Add server
     document.getElementById("submit_server").addEventListener("click", (e) => {
@@ -19,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const storage = Number(document.getElementById("storage_capacity").value);
         const region = document.getElementById("server_region").value || null;
         const zone = document.getElementById("server_zone").value || null;
+        const costId = Number(document.getElementById("cost_id").value || 1);
 
         if (!name || !cpu || !memory || !storage) {
             alert("Fill all required server fields");
@@ -32,13 +36,39 @@ document.addEventListener("DOMContentLoaded", () => {
             ramGb: memory,
             storageGb: storage,
             region: region,
-            zone: zone
+            zone: zone,
+            cost: costId
         });
 
         document.getElementById("server_form").reset();
         updateServerList();
         console.log("Servers:", servers);
     });
+
+    // Add cost
+        document.getElementById("submit_cost").addEventListener("click", (e) => {
+            e.preventDefault();
+
+            const daily = Number(document.getElementById("daily").value);
+            const allocation = Number(document.getElementById("allocation").value);
+            const deallocation = Number(document.getElementById("deallocation").value);
+
+            if (!daily || !allocation || !deallocation) {
+                alert("Fill all required cost fields");
+                return;
+            }
+
+            costs.push({
+                id: costId++,
+                daily: daily,
+                allocation: allocation,
+                deallocation: deallocation
+            });
+
+            document.getElementById("service_form").reset();
+            updateCostList();
+            console.log("Costs:", costs);
+        });
 
     // Add service
     document.getElementById("submit_service").addEventListener("click", (e) => {
@@ -148,13 +178,28 @@ document.addEventListener("DOMContentLoaded", () => {
             servers.map((s, i) => `
                 <div class="border p-2 mb-2 rounded bg-gray-50 flex justify-between items-start">
                     <div>
-                        <strong>${s.name}</strong> - CPU: ${s.cpuCores}, RAM: ${s.ramGb}GB, Storage: ${s.storageGb}GB
+                        <strong>${s.name}</strong> - CPU: ${s.cpuCores}, RAM: ${s.ramGb}GB, Storage: ${s.storageGb}GB, CostID: ${s.cost}
                         ${s.region ? `<br>Region: ${s.region}${s.zone ? `, Zone: ${s.zone}` : ''}` : ''}
                     </div>
                     <button onclick="removeServer(${i})" class="text-red-500 hover:text-red-700">✕</button>
                 </div>
             `).join('');
     }
+
+    function updateCostList() {
+            const list = document.getElementById("cost_list");
+            if (!list) return;
+            list.innerHTML = '<h3 class="font-bold mb-2">Added Costs:</h3>' +
+                costs.map((s, i) => `
+                    <div class="border p-2 mb-2 rounded bg-gray-50 flex justify-between items-start">
+                        <div>
+                            <strong>${s.id}</strong> - Daily: ${s.daily} EUR/day, Allocation: ${s.allocation} EUR, Deallocation: ${s.deallocation} EUR
+                        </div>
+                        <button onclick="removeServer(${i})" class="text-red-500 hover:text-red-700">✕</button>
+                    </div>
+                `).join('');
+        }
+
 
     function updateServiceList() {
         const list = document.getElementById("service_list");
@@ -387,6 +432,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     requests.length = 0;
                     availableDates.length = 0;
                     latencies.length = 0;
+                    costs.length = 0;
 
                     // Import data
                     if (imported.serverList) servers.push(...imported.serverList);
@@ -394,11 +440,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (imported.requests) requests.push(...imported.requests);
                     if (imported.availableDates) availableDates.push(...imported.availableDates);
                     if (imported.latencies) latencies.push(...imported.latencies);
+                    if (imported.costs) costs.push(...imported.costs);
 
                     // Update ID counters
                     serverId = Math.max(...servers.map(s => s.id), 0) + 1;
                     serviceId = Math.max(...services.map(s => s.id), 0) + 1;
                     requestId = Math.max(...requests.map(r => r.id), 0) + 1;
+                    costId = Math.max(...costs.map(r => r.id), 0) + 1;
 
                     // Update all lists
                     updateServerList();
@@ -406,6 +454,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     updateRequestList();
                     updateDateList();
                     updateLatencyList();
+                    updateCostList();
 
                     alert('JSON imported successfully!');
                 } catch (err) {

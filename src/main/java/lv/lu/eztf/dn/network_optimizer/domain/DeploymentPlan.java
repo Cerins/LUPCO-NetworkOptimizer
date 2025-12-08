@@ -7,6 +7,7 @@ import ai.timefold.solver.core.api.domain.solution.ProblemFactCollectionProperty
 import ai.timefold.solver.core.api.domain.valuerange.ValueRangeProvider;
 import ai.timefold.solver.core.api.score.buildin.hardsoft.HardSoftScore;
 import ai.timefold.solver.core.api.solver.SolverStatus;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -47,6 +48,9 @@ public class DeploymentPlan {
     // Other problem facts
     @ProblemFactCollectionProperty
     private List<InterRegionLatency> latencies = new ArrayList<>();
+
+    @JsonProperty("costs")
+    private List<Cost> costs;
 
     @PlanningScore
     private HardSoftScore score;

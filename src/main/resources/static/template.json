@@ -6,6 +6,7 @@
       "cpuCores": 8,
       "ramGb": 32.0,
       "storageGb": 500.0,
+      "cost": null,
       "region": null,
       "zone": null
     }
@@ -18,6 +19,14 @@
       "ramRequired": 4.0,
       "storageRequired": 10.0,
       "priority": 0
+    }
+  ],
+  "costs": [
+    {
+      "id": 1,
+      "daily": 2,
+      "allocation": 5,
+      "deallocation": 3
     }
   ],
   "requests": [
