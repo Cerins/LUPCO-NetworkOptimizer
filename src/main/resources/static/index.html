@@ -7,6 +7,7 @@
 </head>
 <body class="bg-gray-50 min-h-screen">
 
+<!-- HEADER -->
 <div class="bg-blue-400 w-full p-6">
     <a class="text-3xl text-white font-bold mb-2 hover:text-gray-200" href="/">
         Network optimizer</a>
@@ -16,10 +17,19 @@
     </div>
 </div>
 
-<div id="content" class="m-5">
-    <h2>Optimization jobs</h2>
-    <ol id="job_list" class="list-decimal ml-6 space-y-2 text-gray-800"></ol>
-    <a class="text-blue-800 font-bold hover:text-blue-900" href="new_job.html">Add job +</a>
+<!-- CONTENT -->
+<div id="content" class="m-5 max-w-5xl mx-auto">
+
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Optimization Jobs</h2>
+
+        <ol id="job_list" class="list-decimal ml-6 space-y-2 text-gray-700"></ol>
+
+        <div class="mt-6">
+            <a class="text-blue-600 font-semibold hover:text-blue-800" href="new_job.html">Add job +</a>
+        </div>
+    </div>
+
 </div>
 
 <script src="job_list.js"></script>
