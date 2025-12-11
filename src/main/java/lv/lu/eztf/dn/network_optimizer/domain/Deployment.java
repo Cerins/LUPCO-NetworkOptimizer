@@ -43,7 +43,9 @@ public class Deployment {
      * Checks if this deployment is active (has placement and requests)
      */
     public boolean isActive() {
-        return server != null && service != null && requests != null && !requests.isEmpty();
+        // Actually deployment because of service dependencies results
+        // in the fact that active deployments are those which have a server and service
+        return server != null && service != null; // && requests != null && !requests.isEmpty();
     }
 
     /**
