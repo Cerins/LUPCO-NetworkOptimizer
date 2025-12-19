@@ -42,7 +42,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("server_form").reset();
         updateServerList();
-        console.log("Servers:", servers);
     });
 
     // Add cost
@@ -67,7 +66,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             document.getElementById("service_form").reset();
             updateCostList();
-            console.log("Costs:", costs);
         });
 
     // Add service
@@ -96,7 +94,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("service_form").reset();
         updateServiceList();
-        console.log("Services:", services);
     });
 
     // Add request
@@ -125,7 +122,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("request_form").reset();
         updateRequestList();
-        console.log("Requests:", requests);
     });
 
     // Add available date
@@ -144,7 +140,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("date_form").reset();
         updateDateList();
-        console.log("Available Dates:", availableDates);
     });
 
     // Add latency
@@ -168,7 +163,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("latency_form").reset();
         updateLatencyList();
-        console.log("Latencies:", latencies);
     });
 
     // Update display lists
@@ -285,8 +279,6 @@ document.addEventListener("DOMContentLoaded", () => {
             latencies: latencies
         };
 
-        console.log("FINAL JSON:", JSON.stringify(payload, null, 2));
-
         try {
             const res = await fetch("/api", {
                 method: "POST",
@@ -299,15 +291,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            console.log("API Response:", res);
-
             alert("Job submitted successfully!");
 
             const id = await res.text();
 
             window.location.href = `/job.html?id=${id}`;
         } catch (err) {
-            console.error("Request failed:", err);
             alert("Network error: " + err.message);
         }
     });

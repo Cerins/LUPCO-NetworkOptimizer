@@ -1,22 +1,27 @@
 package lv.lu.eztf.dn.network_optimizer.rest;
 
+import ai.timefold.solver.core.api.score.ScoreExplanation;
 import ai.timefold.solver.core.api.score.analysis.ScoreAnalysis;
+import ai.timefold.solver.core.api.score.buildin.hardmediumsoft.HardMediumSoftScore;
 import ai.timefold.solver.core.api.score.buildin.hardsoft.HardSoftScore;
+import ai.timefold.solver.core.api.score.constraint.ConstraintMatch;
+import ai.timefold.solver.core.api.score.constraint.Indictment;
 import ai.timefold.solver.core.api.solver.SolutionManager;
 import ai.timefold.solver.core.api.solver.SolverManager;
 import ai.timefold.solver.core.api.solver.SolverStatus;
 import lombok.extern.slf4j.Slf4j;
 import lv.lu.eztf.dn.network_optimizer.domain.DeploymentPlan;
+import lv.lu.eztf.dn.network_optimizer.domain.Request;
+import lv.lu.eztf.dn.network_optimizer.domain.Server;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
@@ -69,6 +74,87 @@ public class NetworkOptimizerApiController {
         return solutionManager.analyze(solution);
     }
 
+    @GetMapping(value = "/explanation/{jobId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ExplanationDTO explain(@PathVariable("jobId") String jobId) {
+        DeploymentPlan solution = getSolutionAndCheckForExceptions(jobId);
+        ScoreExplanation<DeploymentPlan, HardSoftScore> explanation =
+                solutionManager.explain(solution);
+
+        // Get server costs
+        List<ServerCostDTO> serverCosts = explanation.getIndictmentMap().entrySet().stream()
+                .filter(entry -> entry.getKey() instanceof Server)
+                .map(entry -> {
+                    Server server = (Server) entry.getKey();
+                    Indictment<HardSoftScore> indictment = entry.getValue();
+
+                    Map<String, Integer> costByConstraint = indictment.getConstraintMatchSet()
+                            .stream()
+                            .collect(Collectors.groupingBy(
+                                    match -> match.getConstraintRef().constraintName(),
+                                    Collectors.summingInt(match ->
+                                            match.getScore().softScore())
+                            ));
+
+                    return new ServerCostDTO(
+                            server.getId(),
+                            server.getName(),
+                            indictment.getScore().softScore(),
+                            costByConstraint
+                    );
+                })
+                .collect(Collectors.toList());
+
+        // Get problematic requests
+        List<RequestIssueDTO> problematicRequests = explanation.getIndictmentMap().entrySet().stream()
+                .filter(entry -> entry.getKey() instanceof Request) // Or your Request entity class
+                .filter(entry -> entry.getValue().getScore().hardScore() < 0 ||
+                        entry.getValue().getScore().softScore() < 0)
+                .map(entry -> {
+                    Request request = (Request) entry.getKey();
+                    Indictment<HardSoftScore> indictment = entry.getValue();
+
+                    // Get constraint violations for this request
+                    Map<String, ConstraintDetailDTO> violations = indictment.getConstraintMatchSet()
+                            .stream()
+                            .filter(match -> match.getScore().hardScore() < 0 ||
+                                    match.getScore().softScore() < 0)
+                            .collect(Collectors.groupingBy(
+                                    match -> match.getConstraintRef().constraintName(),
+                                    Collectors.collectingAndThen(
+                                            Collectors.toList(),
+                                            matches -> {
+                                                HardSoftScore totalScore = matches.stream()
+                                                        .map(ConstraintMatch::getScore)
+                                                        .reduce(HardSoftScore.ZERO, HardSoftScore::add);
+
+                                                // Get justification objects (the entities involved)
+                                                List<Object> justifications = matches.stream()
+                                                        .flatMap(match -> match.getJustificationList().stream())
+                                                        .distinct()
+                                                        .collect(Collectors.toList());
+
+                                                return new ConstraintDetailDTO(
+                                                        totalScore.hardScore(),
+                                                        totalScore.softScore(),
+                                                        justifications
+                                                );
+                                            }
+                                    )
+                            ));
+
+                    return new RequestIssueDTO(
+                            request.getId(),
+                            request.getServiceName(),
+                            indictment.getScore().hardScore(),
+                            indictment.getScore().softScore(),
+                            violations
+                    );
+                })
+                .collect(Collectors.toList());
+
+        return new ExplanationDTO(serverCosts, problematicRequests);
+    }
+
     private DeploymentPlan getSolutionAndCheckForExceptions(String jobId) {
         Job job = jobIdToJob.get(jobId);
         if (job == null) {
@@ -93,4 +179,31 @@ public class NetworkOptimizerApiController {
             return new Job(null, error);
         }
     }
+
+    public record ServerCostDTO(
+            long serverId,
+            String serverName,
+            int softCost,
+            Map<String, Integer> costByConstraint
+    ) {}
+
+    public record ExplanationDTO(
+            List<ServerCostDTO> serverCosts,
+            List<RequestIssueDTO> problematicRequests
+    ) {}
+
+    public record RequestIssueDTO(
+            long requestId,
+            String requestName,
+            int hardScore,
+            int softScore,
+            Map<String, ConstraintDetailDTO> violations
+    ) {}
+
+    public record ConstraintDetailDTO(
+            int hardScore,
+            int softScore,
+            List<Object> involvedEntities // The justifications (servers, deployments, etc.)
+    ) {}
+
 }
