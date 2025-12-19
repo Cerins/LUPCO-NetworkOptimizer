@@ -5,12 +5,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const res = await fetch(`/api/${id}`);
     const job = await res.json();
 
-    if(!job.solverStatus){
-        window.location.href = "/not_found.html"
-    }
-
-    console.log(job);
-
     // Display Job ID and Status
     document.getElementById("job_id").textContent = id;
 
@@ -33,6 +27,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     job.serverList.forEach(server => {
         const serverCard = document.createElement("div");
         serverCard.className = "border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow";
+        serverCard.id = `s-${server.id}`
         serverCard.innerHTML = `
             <h3 class="font-bold text-lg text-blue-600 mb-2">${server.name}</h3>
             <p class="text-sm text-gray-600"><span class="font-semibold">ID:</span> ${server.id}</p>
@@ -66,6 +61,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     job.requests.forEach(request => {
         const requestCard = document.createElement("div");
         requestCard.className = "border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow";
+        requestCard.id = `r-${request.id}`;
         requestCard.innerHTML = `
             <div class="flex justify-between items-start">
                 <div>
