@@ -1,9 +1,77 @@
+function countUniqueDays(ranges) {
+    const days = new Set();
+
+    ranges.forEach(({ from, to }) => {
+        let d = new Date(from);
+        d.setHours(0, 0, 0, 0);
+
+        const end = new Date(to);
+        end.setHours(0, 0, 0, 0);
+
+        while (d < end) {
+            days.add(d.toISOString().slice(0, 10));
+            d.setDate(d.getDate() + 1);
+        }
+    });
+
+    return days.size;
+}
+
+function countUniqueDeployments(deployments) {
+    if (!deployments.length) return 0;
+
+    // Normalize to calendar days
+    const ranges = deployments
+        .map(d => ({
+            start: new Date(d.from).setHours(0, 0, 0, 0),
+            end:   new Date(d.to).setHours(0, 0, 0, 0)
+        }))
+        .sort((a, b) => a.start - b.start);
+
+    let count = 1;
+    let currentEnd = ranges[0].end;
+
+    for (let i = 1; i < ranges.length; i++) {
+        const { start, end } = ranges[i];
+
+        // Gap of at least 1 day → new deployment
+        if (start > currentEnd + 24 * 60 * 60 * 1000) {
+            count++;
+            currentEnd = end;
+        } else {
+            // Merge overlapping or touching ranges
+            currentEnd = Math.max(currentEnd, end);
+        }
+    }
+
+    return count;
+}
+
+
+
 document.addEventListener("DOMContentLoaded", async () => {
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id");
 
     const res = await fetch(`/api/${id}`);
     const job = await res.json();
+
+    // Get server deployments
+    const serverDeployments = {};
+
+    job.serverList.forEach(server => {
+        serverDeployments[server.id] = [];
+    });
+
+    job.deployments
+        .filter(d => d.active)
+        .forEach(d => {
+            serverDeployments[d.server].push({
+                from: d.dateFrom,
+                to: d.dateTo,
+                serviceId: d.service
+            });
+        });
 
     // Display Job ID and Status
     document.getElementById("job_id").textContent = id;
@@ -24,19 +92,55 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Display Servers
     const serversContainer = document.getElementById("servers_container");
+
     job.serverList.forEach(server => {
         const serverCard = document.createElement("div");
         serverCard.className = "border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow";
-        serverCard.id = `s-${server.id}`
+        serverCard.id = `s-${server.id}`;
+
+        const deployments = serverDeployments[server.id] || [];
+
+        const activeDays = countUniqueDays(deployments);
+        const uniqueDeployments = countUniqueDeployments(deployments)
+
+        const dailyCost = server.cost.daily ?? 0;
+        const totalCost = activeDays * dailyCost;
+
+        const costMessage = activeDays > 0
+          ? `<b>Total cost: </b> ${totalCost} + ${(server.cost.allocation + server.cost.deallocation)} * ${uniqueDeployments}`
+          : "";
+
+        const deploymentList = deployments.map(d => {
+            const serviceName = job.serviceList.find(s => s.id === d.serviceId)?.name;
+            return `
+                <li class="text-sm text-gray-600">
+                    ${serviceName}: ${new Date(d.from).toLocaleDateString()} → ${new Date(d.to).toLocaleDateString()}
+                </li>
+            `;
+        }).join("");
+
         serverCard.innerHTML = `
             <h3 class="font-bold text-lg text-blue-600 mb-2">${server.name}</h3>
-            <p class="text-sm text-gray-600"><span class="font-semibold">ID:</span> ${server.id}</p>
-            <p class="text-sm text-gray-600"><span class="font-semibold">CPU Cores:</span> ${server.cpuCores}</p>
-            <p class="text-sm text-gray-600"><span class="font-semibold">RAM:</span> ${server.ramGB} GB</p>
-            <p class="text-sm text-gray-600"><span class="font-semibold">Storage:</span> ${server.storageGB} GB</p>
-            <p class="text-sm text-gray-600"><span class="font-semibold">Region:</span> ${server.region || 'N/A'}</p>
-            <p class="text-sm text-gray-600"><span class="font-semibold">Cost:</span> ${server.cost.id || 'N/A'}</p>
+
+            <p class="text-sm"><b>CPU:</b> ${server.cpuCores}</p>
+            <p class="text-sm"><b>RAM:</b> ${server.ramGB} GB</p>
+
+            <div class="border-t my-2"></div>
+
+            <p class="text-sm text-gray-700"><b>Allocation:</b> ${server.cost.allocation}</p>
+            <p class="text-sm text-gray-700"><b>Deallocation:</b> ${server.cost.deallocation}</p>
+            <p class="text-sm text-gray-700"><b>Active days:</b> ${activeDays}</p>
+            <p class="text-sm text-gray-700"><b>Daily cost:</b> ${dailyCost}</p>
+            <p class="text-sm font-semibold text-blue-700">${costMessage}</p>
+
+            <div class="border-t my-2"></div>
+
+            <p class="text-sm font-semibold">Deployments:</p>
+            <ul class="list-disc ml-4">
+                ${deploymentList || "<li class='text-sm text-gray-500'>None</li>"}
+            </ul>
         `;
+
         serversContainer.appendChild(serverCard);
     });
 

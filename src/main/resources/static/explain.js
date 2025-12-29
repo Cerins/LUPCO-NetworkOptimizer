@@ -98,11 +98,6 @@ function injectProblematicRequest(problemRequest) {
         return;
     }
 
-    // Check if already injected
-    if (requestCard.querySelector('.explanation-data')) {
-        return;
-    }
-
     const hardScore = problemRequest.hardScore || 0;
     const softScore = problemRequest.softScore || 0;
     const totalScore = hardScore + softScore;
@@ -183,9 +178,9 @@ function displayExplanationError(errorMessage) {
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
                 <div>
-                    <div class="font-bold text-red-800 text-lg mb-1">Error Loading Explanation</div>
+                    <div class="font-bold text-red-800 text-lg mb-1">Error Loading Job</div>
                     <div class="text-sm text-red-700">${errorMessage}</div>
-                    <div class="text-xs text-red-600 mt-2">Server and request cards will not show detailed explanation data.</div>
+                    <div class="text-xs text-red-600 mt-2">Please submit a new job.</div>
                 </div>
             </div>
         </div>
