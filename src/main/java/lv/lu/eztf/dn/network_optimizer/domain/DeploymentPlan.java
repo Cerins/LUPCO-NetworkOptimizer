@@ -26,10 +26,12 @@ public class DeploymentPlan {
 
     // Value range: Available servers
     @ValueRangeProvider(id = "serverRange")
+    @ProblemFactCollectionProperty
     private List<Server> serverList = new ArrayList<>();
 
     // Value range: Available services (instances to deploy)
     @ValueRangeProvider(id = "serviceRange")
+    @ProblemFactCollectionProperty
     private List<Service> serviceList = new ArrayList<>();
 
     // Value range: Available dates for deployment windows

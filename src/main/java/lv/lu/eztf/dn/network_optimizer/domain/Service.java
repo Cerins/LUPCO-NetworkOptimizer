@@ -7,10 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Setter @Getter @AllArgsConstructor @NoArgsConstructor
 @JsonIdentityInfo(scope = Region.class, property = "id", generator = ObjectIdGenerators.PropertyGenerator.class)
@@ -53,6 +50,24 @@ public class Service {
                 collect(d, out);
             }
         }
+    }
+
+    // Includes itself and all dependencies(even those of children)
+    public List<Service> totalContainedServices() {
+        HashSet<Service> visited = new HashSet<>();
+        LinkedList<Service> que = new LinkedList<>();
+        que.add(this);
+        while(!que.isEmpty()) {
+            Service top = que.removeFirst();
+            visited.add(top);
+            List<Service> dependencies = top.getDependencies();
+            if(dependencies != null) {
+                for(Service child : top.getDependencies()) {
+                    que.push(child);
+                }
+            }
+        }
+        return visited.stream().toList();
     }
 
 

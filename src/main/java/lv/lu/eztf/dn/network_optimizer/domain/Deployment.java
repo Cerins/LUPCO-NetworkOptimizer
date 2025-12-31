@@ -4,15 +4,13 @@ import ai.timefold.solver.core.api.domain.entity.PlanningEntity;
 import ai.timefold.solver.core.api.domain.lookup.PlanningId;
 import ai.timefold.solver.core.api.domain.variable.PlanningListVariable;
 import ai.timefold.solver.core.api.domain.variable.PlanningVariable;
+import ai.timefold.solver.core.api.domain.variable.ShadowVariable;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Setter
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
 @PlanningEntity
 public class Deployment {
@@ -55,10 +53,41 @@ public class Deployment {
         return dateFrom != null && dateTo != null && (dateTo.equals(dateFrom) || dateTo.after(dateFrom));
     }
 
+    public List<Service> getImpactedServices() {
+        if(this.getService() != null) {
+            return this.getService().totalContainedServices();
+        }
+        return new ArrayList<>();
+    }
+
     /**
      * Gets the total number of requests this deployment is serving
      */
     public int getRequestCount() {
         return requests != null ? requests.size() : 0;
     }
+
+    /**
+     * Custom constructor without shadow variable
+     */
+    public Deployment(int id, Service service, Server server, Date dateFrom, Date dateTo, List<Request> requests) {
+        this.id = id;
+        this.service = service;
+        this.server = server;
+        this.dateFrom = dateFrom;
+        this.dateTo = dateTo;
+        this.requests = requests;
+        // requestLatencies is managed by Timefold
+    }
+
+    /**
+     * Gets the computed latency for a specific request in this deployment
+     */
+//    public Float getLatencyForRequest(Request request) {
+//        if (requestLatencies == null) {
+//            return null;
+//        }
+//        return requestLatencies.get(request);
+//    }
+
 }
