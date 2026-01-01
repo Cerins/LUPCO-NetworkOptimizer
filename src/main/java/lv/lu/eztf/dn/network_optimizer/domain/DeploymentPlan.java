@@ -54,6 +54,9 @@ public class DeploymentPlan {
     @JsonProperty("costs")
     private List<Cost> costs;
 
+    @JsonProperty("regions")
+    private List<Region> regions;
+
     @PlanningScore
     private HardSoftScore score;
 }

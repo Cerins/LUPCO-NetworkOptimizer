@@ -161,7 +161,7 @@ public class NetworkOptimizationConstraintProvider implements ConstraintProvider
 
     /**
      * Cost calculation performed inside CS constraint:
-     * allocation + daily × days + deallocation
+     * allocation + daily × days + deallocation/
      */
     private int computeServerIntervalCost(Server server, ConnectedRange range) {
         var cost = server.getCost();

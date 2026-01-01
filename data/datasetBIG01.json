@@ -1,0 +1,96 @@
+{
+  "regions": [
+    { "name": "eu-west", "latency": 5 },
+    { "name": "eu-central", "latency": 5 },
+    { "name": "us-east", "latency": 8 }
+  ],
+  "serverList": [
+    { "id": 1, "name": "eu-west-big", "cpuCores": 16, "ramGB": 32, "storageGB": 500, "region": "eu-west", "cost": 1 },
+    { "id": 2, "name": "eu-west-small", "cpuCores": 8, "ramGB": 16, "storageGB": 200, "region": "eu-west", "cost": 2 },
+    { "id": 3, "name": "eu-central-big", "cpuCores": 16, "ramGB": 32, "storageGB": 500, "region": "eu-central", "cost": 3 },
+    { "id": 4, "name": "eu-central-small", "cpuCores": 8, "ramGB": 16, "storageGB": 200, "region": "eu-central", "cost": 4 },
+    { "id": 5, "name": "us-east-big", "cpuCores": 16, "ramGB": 32, "storageGB": 500, "region": "us-east", "cost": 5 },
+    { "id": 6, "name": "us-east-small", "cpuCores": 8, "ramGB": 16, "storageGB": 200, "region": "us-east", "cost": 6 }
+  ],
+  "serviceList": [
+    { "id": 1, "name": "database", "cpuPerInstance": 4, "ramPerInstance": 8, "storagePerInstance": 80, "maxRequestsPerInstance": 300, "dependencies": [] },
+    { "id": 2, "name": "cache", "cpuPerInstance": 1, "ramPerInstance": 2, "storagePerInstance": 10, "maxRequestsPerInstance": 500, "dependencies": [] },
+    { "id": 3, "name": "api", "cpuPerInstance": 2, "ramPerInstance": 4, "storagePerInstance": 20, "maxRequestsPerInstance": 150, "dependencies": [1, 2] },
+    { "id": 4, "name": "web", "cpuPerInstance": 2, "ramPerInstance": 2, "storagePerInstance": 10, "maxRequestsPerInstance": 250, "dependencies": [3] },
+    { "id": 5, "name": "auth", "cpuPerInstance": 1, "ramPerInstance": 2, "storagePerInstance": 10, "maxRequestsPerInstance": 200, "dependencies": [1] },
+    { "id": 6, "name": "worker", "cpuPerInstance": 2, "ramPerInstance": 4, "storagePerInstance": 20, "maxRequestsPerInstance": 120, "dependencies": [1] }
+  ],
+  "requests": [
+    { "id": 1, "serviceName": "web", "date": "2025-12-10T00:00:00.000Z", "estimatedQueryCount": 60, "maxLatencySLA": 40, "sourceRegion": "eu-west" },
+    { "id": 2, "serviceName": "web", "date": "2025-12-10T00:00:00.000Z", "estimatedQueryCount": 40, "maxLatencySLA": 40, "sourceRegion": "eu-west" },
+    { "id": 3, "serviceName": "api", "date": "2025-12-10T00:00:00.000Z", "estimatedQueryCount": 30, "maxLatencySLA": 40, "sourceRegion": "eu-west" },
+    { "id": 4, "serviceName": "auth", "date": "2025-12-10T00:00:00.000Z", "estimatedQueryCount": 30, "maxLatencySLA": 40, "sourceRegion": "eu-west" },
+    { "id": 5, "serviceName": "worker", "date": "2025-12-10T00:00:00.000Z", "estimatedQueryCount": 20, "maxLatencySLA": 60, "sourceRegion": "eu-west" },
+    { "id": 6, "serviceName": "database", "date": "2025-12-10T00:00:00.000Z", "estimatedQueryCount": 50, "maxLatencySLA": 60, "sourceRegion": "eu-west" },
+
+    { "id": 7, "serviceName": "web", "date": "2025-12-11T00:00:00.000Z", "estimatedQueryCount": 50, "maxLatencySLA": 40, "sourceRegion": "eu-west" },
+    { "id": 8, "serviceName": "web", "date": "2025-12-11T00:00:00.000Z", "estimatedQueryCount": 30, "maxLatencySLA": 40, "sourceRegion": "eu-west" },
+    { "id": 9, "serviceName": "api", "date": "2025-12-11T00:00:00.000Z", "estimatedQueryCount": 20, "maxLatencySLA": 40, "sourceRegion": "eu-west" },
+    { "id": 10, "serviceName": "auth", "date": "2025-12-11T00:00:00.000Z", "estimatedQueryCount": 20, "maxLatencySLA": 40, "sourceRegion": "eu-west" },
+    { "id": 11, "serviceName": "worker", "date": "2025-12-11T00:00:00.000Z", "estimatedQueryCount": 20, "maxLatencySLA": 60, "sourceRegion": "eu-west" },
+    { "id": 12, "serviceName": "database", "date": "2025-12-11T00:00:00.000Z", "estimatedQueryCount": 30, "maxLatencySLA": 60, "sourceRegion": "eu-west" },
+
+    { "id": 13, "serviceName": "web", "date": "2025-12-12T00:00:00.000Z", "estimatedQueryCount": 70, "maxLatencySLA": 40, "sourceRegion": "eu-central" },
+    { "id": 14, "serviceName": "web", "date": "2025-12-12T00:00:00.000Z", "estimatedQueryCount": 40, "maxLatencySLA": 40, "sourceRegion": "eu-central" },
+    { "id": 15, "serviceName": "api", "date": "2025-12-12T00:00:00.000Z", "estimatedQueryCount": 30, "maxLatencySLA": 40, "sourceRegion": "eu-central" },
+    { "id": 16, "serviceName": "auth", "date": "2025-12-12T00:00:00.000Z", "estimatedQueryCount": 30, "maxLatencySLA": 40, "sourceRegion": "eu-central" },
+    { "id": 17, "serviceName": "worker", "date": "2025-12-12T00:00:00.000Z", "estimatedQueryCount": 20, "maxLatencySLA": 60, "sourceRegion": "eu-central" },
+    { "id": 18, "serviceName": "database", "date": "2025-12-12T00:00:00.000Z", "estimatedQueryCount": 40, "maxLatencySLA": 60, "sourceRegion": "eu-central" },
+
+    { "id": 19, "serviceName": "web", "date": "2025-12-13T00:00:00.000Z", "estimatedQueryCount": 90, "maxLatencySLA": 40, "sourceRegion": "eu-central" },
+    { "id": 20, "serviceName": "web", "date": "2025-12-13T00:00:00.000Z", "estimatedQueryCount": 40, "maxLatencySLA": 80, "sourceRegion": "us-east" },
+    { "id": 21, "serviceName": "api", "date": "2025-12-13T00:00:00.000Z", "estimatedQueryCount": 20, "maxLatencySLA": 40, "sourceRegion": "eu-central" },
+    { "id": 22, "serviceName": "auth", "date": "2025-12-13T00:00:00.000Z", "estimatedQueryCount": 20, "maxLatencySLA": 80, "sourceRegion": "us-east" },
+    { "id": 23, "serviceName": "worker", "date": "2025-12-13T00:00:00.000Z", "estimatedQueryCount": 20, "maxLatencySLA": 60, "sourceRegion": "eu-central" },
+    { "id": 24, "serviceName": "database", "date": "2025-12-13T00:00:00.000Z", "estimatedQueryCount": 30, "maxLatencySLA": 80, "sourceRegion": "us-east" }
+  ],
+  "costs": [
+    { "id": 1, "daily": 10.0, "allocation": 5.0, "deallocation": 3.0 },
+    { "id": 2, "daily": 6.0, "allocation": 3.0, "deallocation": 2.0 },
+    { "id": 3, "daily": 10.0, "allocation": 5.0, "deallocation": 3.0 },
+    { "id": 4, "daily": 6.0, "allocation": 3.0, "deallocation": 2.0 },
+    { "id": 5, "daily": 12.0, "allocation": 6.0, "deallocation": 4.0 },
+    { "id": 6, "daily": 7.0, "allocation": 4.0, "deallocation": 3.0 }
+  ],
+  "availableDates": [
+    "2025-12-10T00:00:00.000Z",
+    "2025-12-11T00:00:00.000Z",
+    "2025-12-12T00:00:00.000Z",
+    "2025-12-13T00:00:00.000Z"
+  ],
+  "deployments": [
+    { "id": 1, "service": null, "server": null, "dateFrom": null, "dateTo": null, "requests": [] },
+    { "id": 2, "service": null, "server": null, "dateFrom": null, "dateTo": null, "requests": [] },
+    { "id": 3, "service": null, "server": null, "dateFrom": null, "dateTo": null, "requests": [] },
+    { "id": 4, "service": null, "server": null, "dateFrom": null, "dateTo": null, "requests": [] },
+    { "id": 5, "service": null, "server": null, "dateFrom": null, "dateTo": null, "requests": [] },
+    { "id": 6, "service": null, "server": null, "dateFrom": null, "dateTo": null, "requests": [] },
+
+    { "id": 7, "service": null, "server": null, "dateFrom": null, "dateTo": null, "requests": [] },
+    { "id": 8, "service": null, "server": null, "dateFrom": null, "dateTo": null, "requests": [] },
+    { "id": 9, "service": null, "server": null, "dateFrom": null, "dateTo": null, "requests": [] },
+    { "id": 10, "service": null, "server": null, "dateFrom": null, "dateTo": null, "requests": [] },
+    { "id": 11, "service": null, "server": null, "dateFrom": null, "dateTo": null, "requests": [] },
+    { "id": 12, "service": null, "server": null, "dateFrom": null, "dateTo": null, "requests": [] },
+
+    { "id": 13, "service": null, "server": null, "dateFrom": null, "dateTo": null, "requests": [] },
+    { "id": 14, "service": null, "server": null, "dateFrom": null, "dateTo": null, "requests": [] },
+    { "id": 15, "service": null, "server": null, "dateFrom": null, "dateTo": null, "requests": [] },
+    { "id": 16, "service": null, "server": null, "dateFrom": null, "dateTo": null, "requests": [] },
+    { "id": 17, "service": null, "server": null, "dateFrom": null, "dateTo": null, "requests": [] },
+    { "id": 18, "service": null, "server": null, "dateFrom": null, "dateTo": null, "requests": [] },
+
+    { "id": 19, "service": null, "server": null, "dateFrom": null, "dateTo": null, "requests": [] },
+    { "id": 20, "service": null, "server": null, "dateFrom": null, "dateTo": null, "requests": [] }
+  ],
+  "latencies": [
+    { "region1": "eu-west", "region2": "eu-central", "latency": 25 },
+    { "region1": "eu-west", "region2": "us-east", "latency": 90 },
+    { "region1": "eu-central", "region2": "us-east", "latency": 110 }
+  ]
+}

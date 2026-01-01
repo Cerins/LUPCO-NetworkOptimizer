@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plannerBenchmark xmlns="https://timefold.ai/xsd/benchmark" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="https://timefold.ai/xsd/benchmark https://timefold.ai/xsd/benchmark/benchmark.xsd">
+
+  <benchmarkDirectory>local/benchmarkReport</benchmarkDirectory>
+
+  <warmUpSecondsSpentLimit>30</warmUpSecondsSpentLimit>
+
+  <inheritedSolverBenchmark>
+      <solver>
+          <environmentMode>PHASE_ASSERT</environmentMode>
+          <solutionClass>lv.lu.eztf.dn.network_optimizer.domain.DeploymentPlan</solutionClass>
+          <entityClass>lv.lu.eztf.dn.network_optimizer.domain.Deployment</entityClass>
+          <scoreDirectorFactory>
+              <constraintProviderClass>lv.lu.eztf.dn.network_optimizer.NetworkOptimizationConstraintProvider</constraintProviderClass>
+          </scoreDirectorFactory>
+          <termination>
+              <diminishedReturns />
+          </termination>
+      </solver>
+    <problemBenchmarks>
+      <solutionFileIOClass>lv.lu.eztf.dn.network_optimizer.benchmark.DeploymentPlanSolutionFileIO</solutionFileIOClass>
+        <writeOutputSolutionEnabled>true</writeOutputSolutionEnabled>
+      <inputSolutionFile>data/dataset01.json</inputSolutionFile>
+        <inputSolutionFile>data/dataset02.json</inputSolutionFile>
+        <inputSolutionFile>data/dataset03.json</inputSolutionFile>
+        <inputSolutionFile>data/datasetBIG01.json</inputSolutionFile>
+      <!-- <inputSolutionFile>data/dataset02.json</inputSolutionFile> -->
+        <problemStatisticType>STEP_SCORE</problemStatisticType>
+        <problemStatisticType>BEST_SCORE</problemStatisticType>
+        <singleStatisticType>PICKED_MOVE_TYPE_BEST_SCORE_DIFF</singleStatisticType>
+        <singleStatisticType>CONSTRAINT_MATCH_TOTAL_BEST_SCORE</singleStatisticType>
+        <singleStatisticType>CONSTRAINT_MATCH_TOTAL_STEP_SCORE</singleStatisticType>
+    </problemBenchmarks>
+      <subSingleCount>3</subSingleCount>
+
+  </inheritedSolverBenchmark>
+
+
+    <solverBenchmark>
+        <name>Default</name>
+    </solverBenchmark>
+    <solverBenchmark>
+        <name>Tabu</name>
+        <solver>
+            <constructionHeuristic>
+                <queuedEntityPlacer/>
+            </constructionHeuristic>
+            <constructionHeuristic>
+                <queuedValuePlacer>
+                    <valueSelector variableName="requests"/>
+                </queuedValuePlacer>
+            </constructionHeuristic>
+            <localSearch>
+                <localSearchType>TABU_SEARCH</localSearchType>
+            </localSearch>
+        </solver>
+    </solverBenchmark>
+    <solverBenchmark>
+        <name>LAHC</name>
+        <solver>
+            <constructionHeuristic>
+                <queuedEntityPlacer/>
+            </constructionHeuristic>
+            <constructionHeuristic>
+                <queuedValuePlacer>
+                    <valueSelector variableName="requests"/>
+                </queuedValuePlacer>
+            </constructionHeuristic>
+            <localSearch>
+                <localSearchType>LATE_ACCEPTANCE</localSearchType>
+            </localSearch>
+        </solver>
+    </solverBenchmark>
+    <solverBenchmark>
+        <name>Great Deluge</name>
+        <solver>
+            <constructionHeuristic>
+                <queuedEntityPlacer/>
+            </constructionHeuristic>
+            <constructionHeuristic>
+                <queuedValuePlacer>
+                    <valueSelector variableName="requests"/>
+                </queuedValuePlacer>
+            </constructionHeuristic>
+            <localSearch>
+                <localSearchType>GREAT_DELUGE</localSearchType>
+            </localSearch>
+        </solver>
+    </solverBenchmark>
+</plannerBenchmark>

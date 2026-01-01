@@ -1,0 +1,43 @@
+{
+  "regions": [{ "name": "eu-west", "latency": 0 }],
+  "serverList": [
+    {
+      "id": 1,
+      "name": "server-eu-west-1",
+      "cpuCores": 4,
+      "ramGB": 8,
+      "storageGB": 50,
+      "region": "eu-west",
+      "cost": 1
+    }
+  ],
+  "serviceList": [
+    {
+      "id": 1,
+      "name": "web-service",
+      "cpuPerInstance": 2,
+      "ramPerInstance": 4,
+      "storagePerInstance": 10,
+      "maxRequestsPerInstance": 100,
+      "dependencies": []
+    }
+  ],
+  "requests": [
+    {
+      "id": 1,
+      "serviceName": "web-service",
+      "date": "2025-12-10T08:00:00.000Z",
+      "estimatedQueryCount": 50,
+      "maxLatencySLA": 100,
+      "sourceRegion": "eu-west"
+    }
+  ],
+  "costs": [{ "id": 1, "daily": 10.0, "allocation": 5.0, "deallocation": 3.0 }],
+  "availableDates": ["2025-12-10T08:00:00.000Z"],
+  "deployments": [
+    { "id": 1, "service": null, "server": null, "dateFrom": null, "dateTo": null, "requests": [] },
+    { "id": 2, "service": null, "server": null, "dateFrom": null, "dateTo": null, "requests": [] }
+  ],
+  "latencies": []
+}
+

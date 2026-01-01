@@ -39,6 +39,10 @@
 			<groupId>ai.timefold.solver</groupId>
 			<artifactId>timefold-solver-spring-boot-starter</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>ai.timefold.solver</groupId>
+			<artifactId>timefold-solver-benchmark</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>

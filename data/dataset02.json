@@ -1,0 +1,72 @@
+{
+  "regions": [{ "name": "eu-west", "latency": 0 }],
+  "serverList": [
+    {
+      "id": 1,
+      "name": "server-cheap",
+      "cpuCores": 4,
+      "ramGB": 8,
+      "storageGB": 100,
+      "region": "eu-west",
+      "cost": 1
+    },
+    {
+      "id": 2,
+      "name": "server-expensive",
+      "cpuCores": 8,
+      "ramGB": 16,
+      "storageGB": 100,
+      "region": "eu-west",
+      "cost": 2
+    }
+  ],
+  "serviceList": [
+    {
+      "id": 1,
+      "name": "web",
+      "cpuPerInstance": 2,
+      "ramPerInstance": 2,
+      "storagePerInstance": 5,
+      "maxRequestsPerInstance": 70,
+      "dependencies": []
+    },
+    {
+      "id": 2,
+      "name": "web",
+      "cpuPerInstance": 6,
+      "ramPerInstance": 4,
+      "storagePerInstance": 5,
+      "maxRequestsPerInstance": 140,
+      "dependencies": []
+    }
+  ],
+  "requests": [
+    {
+      "id": 1,
+      "serviceName": "web",
+      "date": "2025-12-10T08:00:00.000Z",
+      "estimatedQueryCount": 70,
+      "maxLatencySLA": 100,
+      "sourceRegion": "eu-west"
+    },
+    {
+      "id": 2,
+      "serviceName": "web",
+      "date": "2025-12-10T08:00:00.000Z",
+      "estimatedQueryCount": 70,
+      "maxLatencySLA": 100,
+      "sourceRegion": "eu-west"
+    }
+  ],
+  "costs": [
+    { "id": 1, "daily": 10.0, "allocation": 5.0, "deallocation": 3.0 },
+    { "id": 2, "daily": 20.0, "allocation": 8.0, "deallocation": 5.0 }
+  ],
+  "availableDates": ["2025-12-10T08:00:00.000Z"],
+  "deployments": [
+    { "id": 1, "service": null, "server": null, "dateFrom": null, "dateTo": null, "requests": [] },
+    { "id": 2, "service": null, "server": null, "dateFrom": null, "dateTo": null, "requests": [] },
+    { "id": 3, "service": null, "server": null, "dateFrom": null, "dateTo": null, "requests": [] }
+  ],
+  "latencies": []
+}
