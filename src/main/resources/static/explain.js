@@ -187,12 +187,5 @@ function displayExplanationError(errorMessage) {
     `;
 }
 
-// Initialize explanation
-document.addEventListener('DOMContentLoaded', () => {
-  const params = new URLSearchParams(window.location.search);
-    const id = params.get("id");
-    fetchExplanation(id);
-});
-
 // Export function to be called from job.js
 window.setExplanationJobData = setJobData;
