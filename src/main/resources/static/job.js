@@ -24,7 +24,7 @@ function countUniqueDeployments(deployments) {
     const ranges = deployments
         .map(d => ({
             start: new Date(d.from).setHours(0, 0, 0, 0),
-            end:   new Date(d.to).setHours(0, 0, 0, 0)
+            end: new Date(d.to).setHours(0, 0, 0, 0)
         }))
         .sort((a, b) => a.start - b.start);
 
@@ -107,8 +107,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         const totalCost = activeDays * dailyCost;
 
         const costMessage = activeDays > 0
-          ? `<b>Total cost: </b> ${totalCost} + ${(server.cost.allocation + server.cost.deallocation)} * ${uniqueDeployments}`
-          : "";
+            ? `<b>Total cost: </b> ${totalCost} + ${(server.cost.allocation + server.cost.deallocation)} * ${uniqueDeployments}`
+            : "";
 
         const deploymentList = deployments.map(d => {
             const serviceName = job.serviceList.find(s => s.id === d.serviceId)?.name;
@@ -216,4 +216,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         dateTag.textContent = new Date(date).toLocaleString();
         datesContainer.appendChild(dateTag);
     });
+
+
+    // Add explanation for costs
+    fetchExplanation(id);
 });
