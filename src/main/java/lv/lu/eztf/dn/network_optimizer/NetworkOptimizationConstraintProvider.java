@@ -26,7 +26,7 @@ public class NetworkOptimizationConstraintProvider implements ConstraintProvider
                 enoughCPU(factory),
                 enoughMemory(factory),
                 enoughStorage(factory),
-                allRequestsAssigned(factory),
+                // allRequestsAssigned(factory),
                 allDependenciesAssigned(factory),
                 allRequestsProcessed(factory),
                 serviceOnMultipleServersAtSameTime(factory),
@@ -255,15 +255,6 @@ public class NetworkOptimizationConstraintProvider implements ConstraintProvider
                                 dep.getService() == service))
                 .penalize(HardSoftScore.ONE_HARD)
                 .asConstraint("Dependencies must be assigned");
-    }
-
-    private Constraint allRequestsAssigned(ConstraintFactory factory) {
-        return factory.forEach(Request.class)
-                .ifNotExists(Deployment.class,
-                        Joiners.filtering((req, dep) ->
-                                dep.getRequests().contains(req)))
-                .penalize(HardSoftScore.ONE_HARD)
-                .asConstraint("Request must be assigned");
     }
 
     private Constraint serviceOnMultipleServersAtSameTime(ConstraintFactory factory) {
