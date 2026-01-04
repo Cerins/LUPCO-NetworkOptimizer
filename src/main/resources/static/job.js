@@ -1,54 +1,3 @@
-function countUniqueDays(ranges) {
-    const days = new Set();
-
-    ranges.forEach(({ from, to }) => {
-        let d = new Date(from);
-        d.setHours(0, 0, 0, 0);
-
-        const end = new Date(to);
-        end.setHours(0, 0, 0, 0);
-
-        while (d < end) {
-            days.add(d.toISOString().slice(0, 10));
-            d.setDate(d.getDate() + 1);
-        }
-    });
-
-    return days.size;
-}
-
-function countUniqueDeployments(deployments) {
-    if (!deployments.length) return 0;
-
-    // Normalize to calendar days
-    const ranges = deployments
-        .map(d => ({
-            start: new Date(d.from).setHours(0, 0, 0, 0),
-            end: new Date(d.to).setHours(0, 0, 0, 0)
-        }))
-        .sort((a, b) => a.start - b.start);
-
-    let count = 1;
-    let currentEnd = ranges[0].end;
-
-    for (let i = 1; i < ranges.length; i++) {
-        const { start, end } = ranges[i];
-
-        // Gap of at least 1 day → new deployment
-        if (start > currentEnd + 24 * 60 * 60 * 1000) {
-            count++;
-            currentEnd = end;
-        } else {
-            // Merge overlapping or touching ranges
-            currentEnd = Math.max(currentEnd, end);
-        }
-    }
-
-    return count;
-}
-
-
-
 document.addEventListener("DOMContentLoaded", async () => {
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id");
@@ -100,16 +49,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const deployments = serverDeployments[server.id] || [];
 
-        const activeDays = countUniqueDays(deployments);
-        const uniqueDeployments = countUniqueDeployments(deployments)
-
-        const dailyCost = server.cost.daily ?? 0;
-        const totalCost = activeDays * dailyCost;
-
-        const costMessage = activeDays > 0
-            ? `<b>Total cost: </b> ${totalCost} + ${(server.cost.allocation + server.cost.deallocation)} * ${uniqueDeployments}`
-            : "";
-
         const deploymentList = deployments.map(d => {
             const serviceName = job.serviceList.find(s => s.id === d.serviceId)?.name;
             return `
@@ -129,9 +68,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             <p class="text-sm text-gray-700"><b>Allocation:</b> ${server.cost.allocation}</p>
             <p class="text-sm text-gray-700"><b>Deallocation:</b> ${server.cost.deallocation}</p>
-            <p class="text-sm text-gray-700"><b>Active days:</b> ${activeDays}</p>
-            <p class="text-sm text-gray-700"><b>Daily cost:</b> ${dailyCost}</p>
-            <p class="text-sm font-semibold text-blue-700">${costMessage}</p>
+            <p class="text-sm text-gray-700"><b>Deallocation:</b> ${server.cost.daily}</p>
 
             <div class="border-t my-2"></div>
 

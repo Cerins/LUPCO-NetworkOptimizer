@@ -5,12 +5,33 @@ document.addEventListener("DOMContentLoaded", () => {
     const availableDates = [];
     const latencies = [];
     const costs = [];
+    const regions = [];
 
     let serverId = 1;
     let serviceId = 1;
     let requestId = 1;
     let costId = 1;
 
+    // Add region
+    document.getElementById("submit_region").addEventListener("click", (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById("region_name").value;
+        const latency = Number(document.getElementById("region_latency").value);
+
+        if (!name || !latency) {
+            alert("Fill all required server fields");
+            return;
+        }
+
+        regions.push({
+            name: name,
+            latency: latency
+        });
+
+        document.getElementById("region_form").reset();
+        updateRegionList();
+    });
 
     // Add server
     document.getElementById("submit_server").addEventListener("click", (e) => {
@@ -45,28 +66,28 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Add cost
-        document.getElementById("submit_cost").addEventListener("click", (e) => {
-            e.preventDefault();
+    document.getElementById("submit_cost").addEventListener("click", (e) => {
+        e.preventDefault();
 
-            const daily = Number(document.getElementById("daily").value);
-            const allocation = Number(document.getElementById("allocation").value);
-            const deallocation = Number(document.getElementById("deallocation").value);
+        const daily = Number(document.getElementById("daily").value);
+        const allocation = Number(document.getElementById("allocation").value);
+        const deallocation = Number(document.getElementById("deallocation").value);
 
-            if (!daily || !allocation || !deallocation) {
-                alert("Fill all required cost fields");
-                return;
-            }
+        if (!daily || !allocation || !deallocation) {
+            alert("Fill all required cost fields");
+            return;
+        }
 
-            costs.push({
-                id: costId++,
-                daily: daily,
-                allocation: allocation,
-                deallocation: deallocation
-            });
-
-            document.getElementById("service_form").reset();
-            updateCostList();
+        costs.push({
+            id: costId++,
+            daily: daily,
+            allocation: allocation,
+            deallocation: deallocation
         });
+
+        document.getElementById("service_form").reset();
+        updateCostList();
+    });
 
     // Add service
     document.getElementById("submit_service").addEventListener("click", (e) => {
@@ -156,9 +177,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         latencies.push({
-            fromRegion: fromRegion,
-            toRegion: toRegion,
-            latencyMs: latencyMs
+            region1: fromRegion,
+            region2: toRegion,
+            latency: latencyMs
         });
 
         document.getElementById("latency_form").reset();
@@ -166,6 +187,20 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Update display lists
+    function updateRegionList() {
+        const list = document.getElementById("region_list");
+        if (!list) return;
+        list.innerHTML = '<h3 class="font-bold mb-2">Added Regions:</h3>' +
+            regions.map((r, i) => `
+                <div class="border p-2 mb-2 rounded bg-gray-50 flex justify-between items-start">
+                    <div>
+                        <strong>${r.name}</strong> - latency: ${r.latency}
+                    </div>
+                    <button onclick="removeRegion(${i})" class="text-red-500 hover:text-red-700">✕</button>
+                </div>
+            `).join('');
+    }
+
     function updateServerList() {
         const list = document.getElementById("server_list");
         if (!list) return;
@@ -182,18 +217,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function updateCostList() {
-            const list = document.getElementById("cost_list");
-            if (!list) return;
-            list.innerHTML = '<h3 class="font-bold mb-2">Added Costs:</h3>' +
-                costs.map((s, i) => `
+        const list = document.getElementById("cost_list");
+        if (!list) return;
+        list.innerHTML = '<h3 class="font-bold mb-2">Added Costs:</h3>' +
+            costs.map((s, i) => `
                     <div class="border p-2 mb-2 rounded bg-gray-50 flex justify-between items-start">
                         <div>
                             <strong>${s.id}</strong> - Daily: ${s.daily} EUR/day, Allocation: ${s.allocation} EUR, Deallocation: ${s.deallocation} EUR
                         </div>
-                        <button onclick="removeServer(${i})" class="text-red-500 hover:text-red-700">✕</button>
+                        <button onclick="removeCost(${i})" class="text-red-500 hover:text-red-700">✕</button>
                     </div>
                 `).join('');
-        }
+    }
 
 
     function updateServiceList() {
@@ -243,7 +278,7 @@ document.addEventListener("DOMContentLoaded", () => {
         list.innerHTML = '<h3 class="font-bold mb-2">Latencies:</h3>' +
             latencies.map((l, i) => `
                 <div class="border p-2 mb-2 rounded bg-gray-50 flex justify-between items-center">
-                    <span>${l.fromRegion} → ${l.toRegion}: ${l.latencyMs}ms</span>
+                    <span>${l.region1} → ${l.region2}: ${l.latency}ms</span>
                     <button onclick="removeLatency(${i})" class="text-red-500 hover:text-red-700">✕</button>
                 </div>
             `).join('');
@@ -255,12 +290,14 @@ document.addEventListener("DOMContentLoaded", () => {
     window.removeRequest = (i) => { requests.splice(i, 1); updateRequestList(); };
     window.removeDate = (i) => { availableDates.splice(i, 1); updateDateList(); };
     window.removeLatency = (i) => { latencies.splice(i, 1); updateLatencyList(); };
+    window.removeRegion = (i) => { regions.splice(i, 1); updateRegionList(); };
+    window.removeCost = (i) => { costs.splice(i, 1); updateCostList(); };
 
     // Submit final JSON
     document.getElementById("submit_button").addEventListener("click", async () => {
         // Generate deployments based on number of requests
         const numDeployments = Math.max(requests.length, 8);
-        const deployments = Array.from({length: numDeployments}, (_, i) => ({
+        const deployments = Array.from({ length: numDeployments }, (_, i) => ({
             id: i + 1,
             service: null,
             server: null,
@@ -269,6 +306,25 @@ document.addEventListener("DOMContentLoaded", () => {
             requests: []
         }));
 
+        if (latencies.length < regions.length * regions.length - regions.length) {
+            regions.forEach((reg1) => {
+                regions.forEach((reg2) => {
+
+                    const existing_latency = latencies.find(
+                        (r) => r.region1 === reg1 && r.region2 === reg2
+                    );
+
+                    if (reg1 !== reg2 && !existing_latency) {
+                        latencies.push({
+                            region1: reg1.name,
+                            region2: reg2.name,
+                            latency: 0
+                        });
+                    }
+                });
+            });
+        }
+
         const payload = {
             serverList: servers,
             serviceList: services,
@@ -276,7 +332,8 @@ document.addEventListener("DOMContentLoaded", () => {
             costs: costs,
             availableDates: availableDates,
             deployments: deployments,
-            latencies: latencies
+            latencies: latencies,
+            regions: regions
         };
 
         try {
@@ -306,7 +363,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (exportBtn) {
         exportBtn.addEventListener("click", () => {
             const numDeployments = Math.max(requests.length, 8);
-            const deployments = Array.from({length: numDeployments}, (_, i) => ({
+            const deployments = Array.from({ length: numDeployments }, (_, i) => ({
                 id: i + 1,
                 service: null,
                 server: null,
@@ -325,7 +382,7 @@ document.addEventListener("DOMContentLoaded", () => {
             };
 
             const jsonStr = JSON.stringify(payload, null, 2);
-            const blob = new Blob([jsonStr], {type: 'application/json'});
+            const blob = new Blob([jsonStr], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -354,6 +411,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     availableDates.length = 0;
                     latencies.length = 0;
                     costs.length = 0;
+                    regions.length = 0;
 
                     // Import data
                     if (imported.serverList) servers.push(...imported.serverList);
@@ -362,6 +420,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (imported.availableDates) availableDates.push(...imported.availableDates);
                     if (imported.latencies) latencies.push(...imported.latencies);
                     if (imported.costs) costs.push(...imported.costs);
+                    if (imported.regions) regions.push(...imported.regions);
 
                     // Update ID counters
                     serverId = Math.max(...servers.map(s => s.id), 0) + 1;
@@ -376,6 +435,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     updateDateList();
                     updateLatencyList();
                     updateCostList();
+                    updateRegionList();
 
                     alert('JSON imported successfully!');
                 } catch (err) {

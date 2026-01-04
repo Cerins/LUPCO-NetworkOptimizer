@@ -1,219 +1,313 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <title>Network optimizer</title>
     <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50 min-h-screen">
-<div class="bg-blue-400 w-full p-6">
-    <a class="text-3xl text-white font-bold mb-2 hover:text-gray-200" href="/">
-        Network optimizer</a>
-    <div class="flex flex-row gap-10">
+  </head>
+  <body class="bg-gray-50 min-h-screen">
+    <div class="bg-blue-400 w-full p-6">
+      <a class="text-3xl text-white font-bold mb-2 hover:text-gray-200" href="/">
+        Network optimizer</a
+      >
+      <div class="flex flex-row gap-10">
         <p class="text-white">Version 1/Dec/2025.</p>
         <em class="text-white">Roberts Ceriņš & Jēkabs Vanags</em>
+      </div>
     </div>
-</div>
 
-<div id="content" class="m-5 max-w-7xl mx-auto">
-
-    <!-- HEADER -->
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
+    <div id="content" class="m-5 max-w-7xl mx-auto">
+      <!-- HEADER -->
+      <div class="bg-white rounded-lg shadow p-6 mb-6">
         <div class="flex justify-between items-center mb-4">
-            <h1 class="text-2xl font-bold text-gray-800">Add new job</h1>
-            <div class="flex gap-6 items-center">
-                <a class="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600"
-                   href="template.json" download="template.json">
-                    JSON template
-                </a>
+          <h1 class="text-2xl font-bold text-gray-800">Add new job</h1>
+          <div class="flex gap-6 items-center">
+            <a
+              class="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600"
+              href="template.json"
+              download="template.json"
+            >
+              JSON template
+            </a>
 
-                <div>
-                    <label for="json_import" class="text-sm font-medium">Import JSON file</label>
-                    <input class="block mt-1" id="json_import" name="json_import" type="file" />
-                </div>
-
-                <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                        id="submit_button">
-                    Submit a problem
-                </button>
+            <div>
+              <label for="json_import" class="text-sm font-medium">Import JSON file</label>
+              <input class="block mt-1" id="json_import" name="json_import" type="file" />
             </div>
+
+            <button
+              class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              id="submit_button"
+            >
+              Submit a problem
+            </button>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <!-- MAIN GRID -->
-    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-
-        <!-- SERVERS -->
+      <!-- MAIN GRID -->
+      <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <!-- REGIONS -->
         <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Servers</h2>
-            <form id="server_form" class="space-y-3">
-                <div>
-                    <label class="block text-sm font-medium">Server name</label>
-                    <input class="border-2 w-full p-2 rounded" id="server_name" required />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">CPU cores</label>
-                    <input class="border-2 w-full p-2 rounded" type="number" id="cpu_capacity" required />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">RAM (GB)</label>
-                    <input class="border-2 w-full p-2 rounded" type="number" id="memory_capacity" required />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">Storage (GB)</label>
-                    <input class="border-2 w-full p-2 rounded" type="number" id="storage_capacity" required />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">Cost (Id)</label>
-                    <input class="border-2 w-full p-2 rounded" type="number" id="cost_id" value="1" />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">Region (optional)</label>
-                    <input class="border-2 w-full p-2 rounded" id="server_region" />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">Zone (optional)</label>
-                    <input class="border-2 w-full p-2 rounded" id="server_zone" />
-                </div>
-                <button id="submit_server" type="submit"
-                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                    Add server +
-                </button>
-            </form>
-            <div id="server_list" class="mt-4 max-h-80 overflow-y-auto p-2 bg-gray-50 rounded"></div>
+          <h2 class="text-xl font-bold text-gray-800 mb-4">Regions</h2>
+          <form id="region_form" class="space-y-3">
+            <div>
+              <label class="block text-sm font-medium">Name</label>
+              <input class="border-2 w-full p-2 rounded" id="name" required />
+            </div>
+            <div>
+              <label class="block text-sm font-medium">Latency</label>
+              <input class="border-2 w-full p-2 rounded" type="number" id="laterncy" required />
+            </div>
+            <button
+              id="submit_region"
+              type="submit"
+              class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Add +
+            </button>
+          </form>
+          <div id="region_list" class="mt-4 max-h-48 overflow-y-auto p-2 bg-gray-50 rounded"></div>
         </div>
 
         <!-- COSTS -->
         <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Costs</h2>
-            <form id="costs_form" class="space-y-3">
-                <div>
-                    <label class="block text-sm font-medium">Daily cost</label>
-                    <input class="border-2 w-full p-2 rounded" type="number" id="daily" required />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">Allocation cost</label>
-                    <input class="border-2 w-full p-2 rounded" type="number" id="allocation" required />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">Deallocation cost</label>
-                    <input class="border-2 w-full p-2 rounded" type="number" id="deallocation" required />
-                </div>
-                <button id="submit_cost" type="submit"
-                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                    Add +
-                </button>
-            </form>
-            <div id="cost_list" class="mt-4 max-h-48 overflow-y-auto p-2 bg-gray-50 rounded"></div>
+          <h2 class="text-xl font-bold text-gray-800 mb-4">Costs</h2>
+          <form id="costs_form" class="space-y-3">
+            <div>
+              <label class="block text-sm font-medium">Daily cost</label>
+              <input class="border-2 w-full p-2 rounded" type="number" id="daily" required />
+            </div>
+            <div>
+              <label class="block text-sm font-medium">Allocation cost</label>
+              <input class="border-2 w-full p-2 rounded" type="number" id="allocation" required />
+            </div>
+            <div>
+              <label class="block text-sm font-medium">Deallocation cost</label>
+              <input class="border-2 w-full p-2 rounded" type="number" id="deallocation" required />
+            </div>
+            <button
+              id="submit_cost"
+              type="submit"
+              class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Add +
+            </button>
+          </form>
+          <div id="cost_list" class="mt-4 max-h-48 overflow-y-auto p-2 bg-gray-50 rounded"></div>
+        </div>
+
+        <!-- SERVERS -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-xl font-bold text-gray-800 mb-4">Servers</h2>
+          <form id="server_form" class="space-y-3">
+            <div>
+              <label class="block text-sm font-medium">Server name</label>
+              <input class="border-2 w-full p-2 rounded" id="server_name" required />
+            </div>
+            <div>
+              <label class="block text-sm font-medium">CPU cores</label>
+              <input class="border-2 w-full p-2 rounded" type="number" id="cpu_capacity" required />
+            </div>
+            <div>
+              <label class="block text-sm font-medium">RAM (GB)</label>
+              <input
+                class="border-2 w-full p-2 rounded"
+                type="number"
+                id="memory_capacity"
+                required
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium">Storage (GB)</label>
+              <input
+                class="border-2 w-full p-2 rounded"
+                type="number"
+                id="storage_capacity"
+                required
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium">Cost (Id)</label>
+              <input class="border-2 w-full p-2 rounded" type="number" id="cost_id" value="1" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium">Region (optional)</label>
+              <input class="border-2 w-full p-2 rounded" id="server_region" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium">Zone (optional)</label>
+              <input class="border-2 w-full p-2 rounded" id="server_zone" />
+            </div>
+            <button
+              id="submit_server"
+              type="submit"
+              class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Add server +
+            </button>
+          </form>
+          <div id="server_list" class="mt-4 max-h-80 overflow-y-auto p-2 bg-gray-50 rounded"></div>
         </div>
 
         <!-- SERVICES -->
         <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Services</h2>
-            <form id="service_form" class="space-y-3">
-                <div>
-                    <label class="block text-sm font-medium">Service name</label>
-                    <input class="border-2 w-full p-2 rounded" id="service_name" required />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">CPU required</label>
-                    <input class="border-2 w-full p-2 rounded" type="number" step="0.1" id="cpu_required" required />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">RAM required (GB)</label>
-                    <input class="border-2 w-full p-2 rounded" type="number" step="0.1" id="memory_required" required />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">Storage required (GB)</label>
-                    <input class="border-2 w-full p-2 rounded" type="number" step="0.1" id="storage_required" required />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">Max requests per instance</label>
-                    <input class="border-2 w-full p-2 rounded" type="number" id="max_requests" required />
-                </div>
-                <button id="submit_service" type="submit"
-                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                    Add service +
-                </button>
-            </form>
-            <div id="service_list" class="mt-4 max-h-80 overflow-y-auto p-2 bg-gray-50 rounded"></div>
+          <h2 class="text-xl font-bold text-gray-800 mb-4">Services</h2>
+          <form id="service_form" class="space-y-3">
+            <div>
+              <label class="block text-sm font-medium">Service name</label>
+              <input class="border-2 w-full p-2 rounded" id="service_name" required />
+            </div>
+            <div>
+              <label class="block text-sm font-medium">CPU required</label>
+              <input
+                class="border-2 w-full p-2 rounded"
+                type="number"
+                step="0.1"
+                id="cpu_required"
+                required
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium">RAM required (GB)</label>
+              <input
+                class="border-2 w-full p-2 rounded"
+                type="number"
+                step="0.1"
+                id="memory_required"
+                required
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium">Storage required (GB)</label>
+              <input
+                class="border-2 w-full p-2 rounded"
+                type="number"
+                step="0.1"
+                id="storage_required"
+                required
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium">Max requests per instance</label>
+              <input class="border-2 w-full p-2 rounded" type="number" id="max_requests" required />
+            </div>
+            <button
+              id="submit_service"
+              type="submit"
+              class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Add service +
+            </button>
+          </form>
+          <div id="service_list" class="mt-4 max-h-80 overflow-y-auto p-2 bg-gray-50 rounded"></div>
         </div>
 
         <!-- REQUESTS -->
         <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Requests</h2>
-            <form id="request_form" class="space-y-3">
-                <div>
-                    <label class="block text-sm font-medium">Service name</label>
-                    <input class="border-2 w-full p-2 rounded" id="request_service_name" required />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">Date created</label>
-                    <input class="border-2 w-full p-2 rounded" type="datetime-local" id="date_created" required />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">Estimated query count</label>
-                    <input class="border-2 w-full p-2 rounded" type="number" id="query_count" required />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">Max latency</label>
-                    <input class="border-2 w-full p-2 rounded" type="number" step="0.01" id="max_latency" required />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">Region</label>
-                    <input class="border-2 w-full p-2 rounded" type="number" id="region_id" />
-                </div>
-                <button id="submit_request" type="submit"
-                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                    Add request +
-                </button>
-            </form>
-            <div id="request_list" class="mt-4 max-h-80 overflow-y-auto p-2 bg-gray-50 rounded"></div>
+          <h2 class="text-xl font-bold text-gray-800 mb-4">Requests</h2>
+          <form id="request_form" class="space-y-3">
+            <div>
+              <label class="block text-sm font-medium">Service name</label>
+              <input class="border-2 w-full p-2 rounded" id="request_service_name" required />
+            </div>
+            <div>
+              <label class="block text-sm font-medium">Date created</label>
+              <input
+                class="border-2 w-full p-2 rounded"
+                type="datetime-local"
+                id="date_created"
+                required
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium">Estimated query count</label>
+              <input class="border-2 w-full p-2 rounded" type="number" id="query_count" required />
+            </div>
+            <div>
+              <label class="block text-sm font-medium">Max latency</label>
+              <input
+                class="border-2 w-full p-2 rounded"
+                type="number"
+                step="0.01"
+                id="max_latency"
+                required
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium">Region</label>
+              <input class="border-2 w-full p-2 rounded" type="number" id="region_id" />
+            </div>
+            <button
+              id="submit_request"
+              type="submit"
+              class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Add request +
+            </button>
+          </form>
+          <div id="request_list" class="mt-4 max-h-80 overflow-y-auto p-2 bg-gray-50 rounded"></div>
         </div>
 
         <!-- AVAILABLE DATES -->
         <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Available Dates</h2>
-            <form id="date_form" class="space-y-3">
-                <div>
-                    <label class="block text-sm font-medium">Date</label>
-                    <input class="border-2 w-full p-2 rounded" type="datetime-local" id="available_date" required />
-                </div>
-                <button id="submit_date" type="submit"
-                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                    Add +
-                </button>
-            </form>
-            <div id="date_list" class="mt-4 max-h-48 overflow-y-auto p-2 bg-gray-50 rounded"></div>
+          <h2 class="text-xl font-bold text-gray-800 mb-4">Available Dates</h2>
+          <form id="date_form" class="space-y-3">
+            <div>
+              <label class="block text-sm font-medium">Date</label>
+              <input
+                class="border-2 w-full p-2 rounded"
+                type="datetime-local"
+                id="available_date"
+                required
+              />
+            </div>
+            <button
+              id="submit_date"
+              type="submit"
+              class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Add +
+            </button>
+          </form>
+          <div id="date_list" class="mt-4 max-h-48 overflow-y-auto p-2 bg-gray-50 rounded"></div>
         </div>
 
         <!-- LATENCIES -->
         <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Latencies</h2>
-            <form id="latency_form" class="space-y-3">
-                <div>
-                    <label class="block text-sm font-medium">From region</label>
-                    <input class="border-2 w-full p-2 rounded" id="from_region" required />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">To region</label>
-                    <input class="border-2 w-full p-2 rounded" id="to_region" required />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">Latency (ms)</label>
-                    <input class="border-2 w-full p-2 rounded" type="number" step="0.1" id="latency_ms" required />
-                </div>
-                <button id="submit_latency" type="submit"
-                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                    Add +
-                </button>
-            </form>
-            <div id="latency_list" class="mt-4 max-h-48 overflow-y-auto p-2 bg-gray-50 rounded"></div>
+          <h2 class="text-xl font-bold text-gray-800 mb-4">Latencies</h2>
+          <form id="latency_form" class="space-y-3">
+            <div>
+              <label class="block text-sm font-medium">From region</label>
+              <input class="border-2 w-full p-2 rounded" id="from_region" required />
+            </div>
+            <div>
+              <label class="block text-sm font-medium">To region</label>
+              <input class="border-2 w-full p-2 rounded" id="to_region" required />
+            </div>
+            <div>
+              <label class="block text-sm font-medium">Latency (ms)</label>
+              <input
+                class="border-2 w-full p-2 rounded"
+                type="number"
+                step="0.1"
+                id="latency_ms"
+                required
+              />
+            </div>
+            <button
+              id="submit_latency"
+              type="submit"
+              class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Add +
+            </button>
+          </form>
+          <div id="latency_list" class="mt-4 max-h-48 overflow-y-auto p-2 bg-gray-50 rounded"></div>
         </div>
-
+      </div>
     </div>
-</div>
 
-<script src="new_job.js"></script>
-</body>
+    <script src="new_job.js"></script>
+  </body>
 </html>
