@@ -5,6 +5,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     const res = await fetch(`/api/${id}`);
     const job = await res.json();
 
+    document.getElementById("download").addEventListener(("click"), () => {
+        window.open(`/api/${id}/download`, '_blank');
+    })
+
+
     // Get server deployments
     const serverDeployments = {};
 

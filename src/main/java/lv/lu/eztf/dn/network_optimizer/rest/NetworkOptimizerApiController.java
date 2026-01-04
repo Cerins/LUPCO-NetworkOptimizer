@@ -17,6 +17,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpHeaders;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -66,6 +71,25 @@ public class NetworkOptimizerApiController {
         solution.solverStatus = solverStatus;
         return solution;
     }
+    
+    @GetMapping(value = "/{jobId}/download", produces = MediaType.APPLICATION_JSON_VALUE)
+        public ResponseEntity<String> downloadSolution(@PathVariable("jobId") String jobId) throws JsonProcessingException {
+        // Saņem risinājumu un solver statusu
+        DeploymentPlan solution = getSolutionAndCheckForExceptions(jobId);
+        SolverStatus solverStatus = solverManager.getSolverStatus(jobId);
+        solution.setSolverStatus(solverStatus);
+
+        // Konvertē uz JSON
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(solution);
+
+        // Sagatavo HTTP atbildi ar "attachment" galveni, lai browsers piedāvātu lejuplādi
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"deployment_plan_" + jobId + ".json\"")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(json);
+    }
+
 
     @GetMapping(value = "/score/{jobId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ScoreAnalysis<HardSoftScore> analyze(
