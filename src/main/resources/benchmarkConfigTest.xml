@@ -21,8 +21,9 @@
     <problemBenchmarks>
       <solutionFileIOClass>lv.lu.eztf.dn.network_optimizer.benchmark.DeploymentPlanSolutionFileIO</solutionFileIOClass>
         <writeOutputSolutionEnabled>true</writeOutputSolutionEnabled>
-<!--          <inputSolutionFile>data/benchmark1.json</inputSolutionFile>-->
-        <inputSolutionFile>data/benchmark2.json</inputSolutionFile>
+          <inputSolutionFile>data/test1.json</inputSolutionFile>
+        <inputSolutionFile>data/test2.json</inputSolutionFile>
+        <inputSolutionFile>data/test3.json</inputSolutionFile>
         <problemStatisticType>STEP_SCORE</problemStatisticType>
         <problemStatisticType>BEST_SCORE</problemStatisticType>
         <singleStatisticType>PICKED_MOVE_TYPE_BEST_SCORE_DIFF</singleStatisticType>
@@ -32,27 +33,6 @@
       <subSingleCount>3</subSingleCount>
 
   </inheritedSolverBenchmark>
-
-
-<!--    <solverBenchmark>-->
-<!--        <name>Default</name>-->
-<!--    </solverBenchmark>-->
-    <solverBenchmark>
-        <name>Tabu</name>
-        <solver>
-            <constructionHeuristic>
-                <queuedEntityPlacer/>
-            </constructionHeuristic>
-            <constructionHeuristic>
-                <queuedValuePlacer>
-                    <valueSelector variableName="requests"/>
-                </queuedValuePlacer>
-            </constructionHeuristic>
-            <localSearch>
-                <localSearchType>TABU_SEARCH</localSearchType>
-            </localSearch>
-        </solver>
-    </solverBenchmark>
     <solverBenchmark>
         <name>LAHC</name>
         <solver>
@@ -66,22 +46,6 @@
             </constructionHeuristic>
             <localSearch>
                 <localSearchType>LATE_ACCEPTANCE</localSearchType>
-            </localSearch>
-        </solver>
-    </solverBenchmark>
-    <solverBenchmark>
-        <name>Great Deluge</name>
-        <solver>
-            <constructionHeuristic>
-                <queuedEntityPlacer/>
-            </constructionHeuristic>
-            <constructionHeuristic>
-                <queuedValuePlacer>
-                    <valueSelector variableName="requests"/>
-                </queuedValuePlacer>
-            </constructionHeuristic>
-            <localSearch>
-                <localSearchType>GREAT_DELUGE</localSearchType>
             </localSearch>
         </solver>
     </solverBenchmark>
